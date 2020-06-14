@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>BUILDLet.PowerShell.UtilitiesTests</AssemblyName>
+    <Version>1.4.0</Version>
+    <Authors>Daiki Sakamoto</Authors>
+    <Company>BUILDLet</Company>
+    <Description>BUILDLet Utilities for PowerShell Test Module</Description>
+    <Copyright>© 2020 Daiki Sakamoto</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/buildlet/BUILDLet.PowerShell.Utilities</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BUILDLet.PowerShell.Utilities.Commands\BUILDLet.PowerShell.Utilities.Commands.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="SET ModuleName=&quot;BUILDLet.PowerShell.UtilitiesTests&quot;&#xD;&#xA;SET ModuleTargetPath1=&quot;$(TargetPath)&quot;&#xD;&#xA;SET ModuleTargetPath2=&quot;$(TargetDir)BUILDLet.PowerShell.Utilities.dll&quot;&#xD;&#xA;&#xD;&#xA;SET TestTargetModuleDir=&quot;..\%25ModuleName%25\bin\$(ConfigurationName)\%25ModuleName%25\&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TestTargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath1%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath2%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;" />
+  </Target>
+
+</Project>
