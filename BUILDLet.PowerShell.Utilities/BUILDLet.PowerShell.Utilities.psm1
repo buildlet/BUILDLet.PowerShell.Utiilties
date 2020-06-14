@@ -135,8 +135,8 @@ https://docs.microsoft.com/ja-jp/powershell/module/Microsoft.PowerShell.Security
     )
 
     Process {
-        if (($cert = (Get-AuthenticodeSignature -FilePath $FilePath).SignerCertificate) -ne $null) {
-			$cert.Subject -split ',' | ? { $_ -like 'CN=*' } | % { return ($_ -split 'CN=')[1] }
+        if ($null -ne ($cert = (Get-AuthenticodeSignature -FilePath $FilePath).SignerCertificate)) {
+			$cert.Subject -split ',' | Where-Object { $_ -like 'CN=*' } | ForEach-Object { return ($_ -split 'CN=')[1] }
         }
     }
 }
