@@ -1,0 +1,177 @@
+﻿/***************************************************************************************************
+The MIT License (MIT)
+
+Copyright 2020 Daiki Sakamoto
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
+associated documentation files (the "Software"), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or 
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT 
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+***************************************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Management.Automation;
+using System.Collections.ObjectModel; // for ReadOnlyDictionary
+using System.Linq;
+
+using BUILDLet.Standard.Utilities; // for PrivateProfile
+
+namespace BUILDLet.PowerShell.Utilities.Commands
+{
+    [CmdletBinding(HelpUri = "https://github.com/buildlet/BUILDLet.PowerShell.Utilities")]
+    [Cmdlet(VerbsCommon.Get, "PrivateProfile", SupportsShouldProcess = true)]
+    [OutputType(typeof(string), typeof(PSCustomObject[]))]
+    public class GetPrivateProfileCmmmand : PSCmdlet
+    {
+        // ----------------------------------------------------------------------------------------------------
+        // PARAMETER(S)
+        // ----------------------------------------------------------------------------------------------------
+
+        // .PARAMETER Path
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = PathHelpMessage)]
+        [Alias("PSPath")]
+        public string Path { get; set; }
+        private const string PathHelpMessage =
+@"INI ファイルのパスを指定します。";
+
+
+        // .PARAMETER Section
+        [Parameter(Position = 1, HelpMessage = SectionHelpMessage)]
+        public string Section { get; set; }
+        private const string SectionHelpMessage =
+@"取得するエントリーのセクションを指定します。
+省略した場合は、ファイル全体に含まれる全てのエントリーを取得します。";
+
+
+        // .PARAMETER Key
+        [Parameter(Position = 2, HelpMessage = KeyHelpMessage)]
+        public string Key { get; set; }
+        private const string KeyHelpMessage =
+@"取得するエントリーのキーを指定します。
+省略した場合は、指定したセクションに含まれる全てのエントリーを取得します。";
+
+
+        // ----------------------------------------------------------------------------------------------------
+        // Pre-Processing Operations
+        // ----------------------------------------------------------------------------------------------------
+        // (None)
+
+
+        // ----------------------------------------------------------------------------------------------------
+        // Input Processing Operations
+        // ----------------------------------------------------------------------------------------------------
+        protected override void ProcessRecord()
+        {
+            foreach (var filepath in SessionLocation.GetResolvedPath(this.SessionState, this.Path))
+            {
+                // Validation (File Existence Check):
+                if (!File.Exists(filepath)) { throw new FileNotFoundException(); }
+
+                // Open INI File Stream by READ-ONLY Mode
+                using (var profile = new PrivateProfile(filepath))
+                {
+                    if (this.Section is null)
+                    {
+                        // FILE:
+
+                        // Should Process
+                        if (this.ShouldProcess($"ファイル '{filepath}'", "全てのエントリーの取得"))
+                        {
+                            // for Sections
+                            foreach (var section_name in profile.Sections.Keys)
+                            {
+                                // for Entries
+                                foreach (var key in profile.Sections[section_name].Entries.Keys)
+                                {
+                                    // OUTPUT Entry
+                                    this.WriteEntry(section_name, key, profile.Sections[section_name].Entries[key]);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Validation (SECTION Existence Check):
+                        if (!profile.Contains(this.Section)) { throw new KeyNotFoundException(); }
+
+                        // UPDATE SECTION
+                        this.Section = (from section_name in profile.Sections.Keys where string.Compare(section_name, this.Section, true) == 0 select section_name).First();
+
+                        if (this.Key is null)
+                        {
+                            // SECTION:
+
+                            // Should Process
+                            if (this.ShouldProcess($"ファイル '{filepath}'", $"セクション '{this.Section}' に含まれる全てのエントリーの取得"))
+                            {
+
+                                // GET Entries
+                                var entries = profile.Sections[this.Section].Entries;
+
+                                // for Entries
+                                foreach (var key in entries.Keys)
+                                {
+                                    // OUTPUT Entry
+                                    this.WriteEntry(this.Section, key, entries[key]);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // ENTRY:
+
+                            // Validation (KEY Existence Check):
+                            if (!profile.Sections[this.Section].Entries.ContainsKey(this.Key)) { throw new KeyNotFoundException(); }
+
+                            // UPDATE KEY
+                            this.Key = (from key in profile.Sections[this.Section].Entries.Keys where string.Compare(key, this.Key, true) == 0 select key).First();
+
+                            // Should Process
+                            if (this.ShouldProcess($"ファイル '{filepath}'", $"セクション '{this.Section}' に含まれるキー '{this.Key}' の値の取得"))
+                            {
+                                // OUTPUT
+                                this.WriteObject(profile.GetValue(this.Section, this.Key));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------------------------------------------
+        // Post-Processing Operations
+        // ----------------------------------------------------------------------------------------------------
+        // (None)
+
+
+        // ----------------------------------------------------------------------------------------------------
+        // Private Method(s)
+        // ----------------------------------------------------------------------------------------------------
+
+        // OUTPUT Entry
+        private void WriteEntry(string section, string key, string value)
+        {
+            // NEW PSObject
+            PSObject psobj = new PSObject();
+
+            // Add Member(s)
+            psobj.Members.Add(new PSNoteProperty("Section", section));
+            psobj.Members.Add(new PSNoteProperty("Key", key));
+            psobj.Members.Add(new PSNoteProperty("Value", value));
+
+            // Write PSObject
+            this.WriteObject(psobj);
+        }
+    }
+}
