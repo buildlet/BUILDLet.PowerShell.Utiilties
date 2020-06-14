@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>BUILDLet.PowerShell.UtilitiesTests</AssemblyName>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <Authors>Daiki Sakamoto</Authors>
     <Company>BUILDLet</Company>
     <Description>BUILDLet Utilities for PowerShell Test Module</Description>
