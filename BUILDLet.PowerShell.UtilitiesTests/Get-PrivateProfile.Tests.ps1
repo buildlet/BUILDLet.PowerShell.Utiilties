@@ -64,7 +64,7 @@ Describe "Get-PrivateProfile" {
             Param($Path, $Section, $Key, $Value)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
             $actual = Get-PrivateProfile -Path $Path -Section $Section -Key $Key
@@ -80,6 +80,7 @@ Describe "Get-PrivateProfile" {
 		}
 	}
 
+
     # GET SECTION
 	Context 'with parameter $Path and $Section' {
 
@@ -91,7 +92,6 @@ Describe "Get-PrivateProfile" {
                 Section = 'Section'
                 Entries = @(
                     @{
-                        Section = 'SECTION'
                         Key = 'KEY'
                         Value ='VALUE'
                     }
@@ -104,12 +104,10 @@ Describe "Get-PrivateProfile" {
                 Section = 'Section2'
                 Entries = @(
                     @{
-                        Section = 'SECTION2'
                         Key = 'KEY1'
                         Value ='VALUE1'
                     }
                     @{
-                        Section = 'SECTION2'
                         Key = 'KEY2'
                         Value ='VALUE2'
                     }
@@ -123,37 +121,33 @@ Describe "Get-PrivateProfile" {
             Param($Path, $Section, $Entries)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
-            [psobject[]]$actual = Get-PrivateProfile -Path $Path -Section $Section
+            $actual = Get-PrivateProfile -Path $Path -Section $Section
 
-            # ASSERT
-            for ($i = 0; $i -lt $Entries.Count; $i++) {
+            # ASSERT (for Entries)
+            $Entries | % {
+
+                # SET Expected Entry
+                $expected_entry = $_
 
                 # OUTPUT (only for DEBUG Build)
                 if ($ActiveConfigurationName -eq 'Debug') {
-                    Write-Host ("`t`t`tExpected Entries[$i] (Section, Key, Value): (`"" + $Entries[$i].Section + "`", `"" + $Entries[$i].Key + '", "' + $Entries[$i].Value + '")')
-                    Write-Host ("`t`t`tActual Entries[$i] (Section, Key, Value):   (`"" + $actual[$i].Section + "`", `"" + $actual[$i].Key + '", "' + $actual[$i].Value + '")')
+                    Write-Host ("`t`t`tEntry: `"" + $expected_entry.Key + '", "' + $actual[$expected_entry.Key] + '"')
                 }
 
-                # ASSERT (1: Section)
-                $actual[$i].Section | Should Be $Section
-
-                # ASSERT (2: Key)
-                $actual[$i].Key | Should Be $Entries[$i].Key
-
-                # ASSERT (3: Value)
-                $actual[$i].Value | Should Be $Entries[$i].Value
+                # ASSERT (1: Entry)
+                $actual[$expected_entry.Key] | Should Be $expected_entry.Value
             }
 
-            # ASSERT (4: Count)
+            # ASSERT (2: Count)
             $actual.Count | Should Be $Entries.Count
 		}
 	}
 
 
-    # GET ALL SECTION(S)
+    # GET ALL SECTION(S) from File
 	Context 'with parameter $Path only' {
 
         $TestCases = @(
@@ -161,21 +155,28 @@ Describe "Get-PrivateProfile" {
             # Get-PrivateProfile_Test2.ini
             @{
                 Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfile_Test2.ini
-                Entries = @(
+                Sections = @(
                     @{
-                        Section = 'SECTION1'
-                        Key = 'KEY1'
-                        Value ='VALUE1'
+                        Name = 'SECTION1'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                        )
                     }
                     @{
-                        Section = 'SECTION2'
-                        Key = 'KEY1'
-                        Value ='VALUE1'
-                    }
-                    @{
-                        Section = 'SECTION2'
-                        Key = 'KEY2'
-                        Value ='VALUE2'
+                        Name = 'SECTION2'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                            @{
+                                Key = 'KEY2'
+                                Value ='VALUE2'
+                            }
+                        )
                     }
                 )
             }
@@ -184,35 +185,161 @@ Describe "Get-PrivateProfile" {
 		It "returns All Entries in the file" -TestCases $TestCases {
 
             # PARAMETER(S)
-            Param($Path, $Entries)
+            Param($Path, $Sections)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
-            [psobject[]]$actual = Get-PrivateProfile -Path $Path
+            $actual = Get-PrivateProfile -Path $Path
 
-            # ASSERT
-            for ($i = 0; $i -lt $Entries.Count; $i++) {
+            # ASSERT (for Sections)
+            $Sections | % {
+
+                # SET Expected Secction
+                $expected_section = $_
 
                 # OUTPUT (only for DEBUG Build)
                 if ($ActiveConfigurationName -eq 'Debug') {
-                    Write-Host ("`t`t`tExpected Entries[$i] (Section, Key, Value): (`"" + $Entries[$i].Section + "`", `"" + $Entries[$i].Key + '", "' + $Entries[$i].Value + '")')
-                    Write-Host ("`t`t`tActual Entries[$i] (Section, Key, Value):   (`"" + $actual[$i].Section + "`", `"" + $actual[$i].Key + '", "' + $actual[$i].Value + '")')
+                    Write-Host ("`t`t`tSection Name: `"" + $expected_section.Name + '"')
                 }
 
-                # ASSERT (1: Section)
-                $actual[$i].Section | Should Be $Entries[$i].Section
+                # ASSERT (1: Section Name)
+                $actual.ContainsKey($expected_section.Name) | Should Be $true
 
-                # ASSERT (2: Key)
-                $actual[$i].Key | Should Be $Entries[$i].Key
+                # for Entries
+                $expected_section.Entries | % {
 
-                # ASSERT (3: Value)
-                $actual[$i].Value | Should Be $Entries[$i].Value
+                    # SET Expected Entry
+                    $expected_entry = $_
+
+                    # OUTPUT (only for DEBUG Build)
+                    if ($ActiveConfigurationName -eq 'Debug') {
+                        Write-Host ("`t`t`tEntry: `"" + $expected_entry.Key + '", "' + $actual[$expected_section.Name][$expected_entry.Key] + '"')
+                    }
+
+                    # ASSERT (2: Entry)
+                    $actual[$expected_section.Name][$expected_entry.Key] | Should Be $expected_entry.Value
+                }
+
+                # ASSERT (3: Count of Entries)
+                $actual[$expected_section.Name].Count | Should Be $expected_section.Entries.Count
             }
 
-            # ASSERT (4: Count)
-            $actual.Count | Should Be $Entries.Count
+            # ASSERT (4: Count of Sections)
+            $actual.Count | Should Be $Sections.Count
+		}
+	}
+
+
+    # GET ALL SECTION(S) from $InputObject
+	Context 'with parameter $InputObject' {
+
+        # 1)
+        $TestCases = @(
+
+            @{
+                InputObject =
+@"
+[SECTION]
+KEY=VALUE
+"@
+                Sections = @(
+                    @{
+                        Name = 'SECTION'
+                        Entries = @(
+                            @{
+                                Key = 'KEY'
+                                Value ='VALUE'
+                            }
+                        )
+                    }
+                )
+            }
+
+            # 2)
+            @{
+                InputObject =
+@"
+[SECTION1]
+KEY1=VALUE1
+[SECTION2]
+KEY1=VALUE1
+KEY2=VALUE2
+"@
+                Sections = @(
+                    @{
+                        Name = 'SECTION1'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                        )
+                    }
+                    @{
+                        Name = 'SECTION2'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                            @{
+                                Key = 'KEY2'
+                                Value ='VALUE2'
+                            }
+                        )
+                    }
+                )
+            }
+        )
+
+		It "returns All Entries in content" -TestCases $TestCases {
+
+            # PARAMETER(S)
+            Param($InputObject, $Sections)
+
+            # ARRANGE
+            Set-Location -Path $PSScriptRoot
+
+            # ACT
+            $actual = Get-PrivateProfile -InputObject $InputObject
+
+            # ASSERT (for Sections)
+            $Sections | % {
+
+                # SET Expected Secction
+                $expected_section = $_
+
+                # OUTPUT (only for DEBUG Build)
+                if ($ActiveConfigurationName -eq 'Debug') {
+                    Write-Host ("`t`t`tSection Name: `"" + $expected_section.Name + '"')
+                }
+
+                # ASSERT (1: Section Name)
+                $actual.ContainsKey($expected_section.Name) | Should Be $true
+
+                # for Entries
+                $expected_section.Entries | % {
+
+                    # SET Expected Entry
+                    $expected_entry = $_
+
+                    # OUTPUT (only for DEBUG Build)
+                    if ($ActiveConfigurationName -eq 'Debug') {
+                        Write-Host ("`t`t`tEntry: `"" + $expected_entry.Key + '", "' + $actual[$expected_section.Name][$expected_entry.Key] + '"')
+                    }
+
+                    # ASSERT (2: Entry)
+                    $actual[$expected_section.Name][$expected_entry.Key] | Should Be $expected_entry.Value
+                }
+
+                # ASSERT (3: Count of Entries)
+                $actual[$expected_section.Name].Count | Should Be $expected_section.Entries.Count
+            }
+
+            # ASSERT (4: Count of Sections)
+            $actual.Count | Should Be $Sections.Count
 		}
 	}
 }

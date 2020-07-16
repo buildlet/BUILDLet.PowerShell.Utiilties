@@ -37,7 +37,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // ----------------------------------------------------------------------------------------------------
 
         // .PARAMETER Path
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = PathHelpMessage)]
+        [Parameter(HelpMessage = PathHelpMessage, Mandatory = true, Position = 0, ValueFromPipeline = true)]
         [Alias("PSPath")]
         public string Path { get; set; }
         private const string PathHelpMessage =
@@ -45,21 +45,21 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER Section
-        [Parameter(Position = 1, Mandatory = true, HelpMessage = SectionHelpMessage)]
+        [Parameter(HelpMessage = SectionHelpMessage, Mandatory = true, Position = 1)]
         public string Section { get; set; }
         private const string SectionHelpMessage =
 @"設定するエントリーのセクションを指定します。";
 
 
         // .PARAMETER Key
-        [Parameter(Position = 2, Mandatory = true, HelpMessage = KeyHelpMessage)]
+        [Parameter(HelpMessage = KeyHelpMessage, Mandatory = true, Position = 2)]
         public string Key { get; set; }
         private const string KeyHelpMessage =
 @"設定するエントリーのキーを指定します。";
 
 
         // .PARAMETER Value
-        [Parameter(Position = 3, Mandatory = true, HelpMessage = ValueHelpMessage)]
+        [Parameter(HelpMessage = ValueHelpMessage, Mandatory = true, Position = 3)]
         public string Value { get; set; }
         private const string ValueHelpMessage =
 @"設定するエントリーの値を指定します。";

@@ -39,7 +39,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // ----------------------------------------------------------------------------------------------------
 
         // .PARAMETER Path
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = PathHelpMessage)]
+        [Parameter(HelpMessage = PathHelpMessage, Mandatory = true, Position = 0, ValueFromPipeline = true)]
         [Alias("PSPath")]
         public string Path { get; set; }
         private const string PathHelpMessage =
@@ -47,7 +47,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER DestinationPath
-        [Parameter(Position = 1, HelpMessage = DestinationHelpMessage)]
+        [Parameter(HelpMessage = DestinationHelpMessage, Position = 1)]
         public string DestinationPath { get; set; }
         private const string DestinationHelpMessage =
 @"展開されたエントリを保存するディレクトリのパスを指定します。
@@ -71,7 +71,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER Force
-        [Parameter(Mandatory = false, HelpMessage = ForceHelpMessage)]
+        [Parameter(HelpMessage = ForceHelpMessage)]
         public SwitchParameter Force { get; set; }
         private const string ForceHelpMessage =
 @"ファイルの展開先に同じ名前のファイルやディレクトリが既に存在していた場合に、そのファイルを上書きします。
@@ -99,7 +99,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
         [Parameter(HelpMessage = SuppressOutputHelpMessage)]
         public SwitchParameter SuppressOutput { get; set; }
-        protected const string SuppressOutputHelpMessage =
+        private const string SuppressOutputHelpMessage =
 @"このコマンドレットの出力を抑制します。
 Source に含まれるエントリーが多く、パフォーマンスに影響がある場合に、このパラメーターを指定してください。
 進行状況バーも非表示にする場合は SupressProgress パラメーターを指定してください。

@@ -32,14 +32,21 @@ namespace BUILDLet.PowerShell.Utilities
         // Static Method(s)
         // ----------------------------------------------------------------------------------------------------
 
+        // NOTE:
+        // "session.Path.CurrentFileSystemLocation.ProviderPath" should be used instead of "session.Path.CurrentFileSystemLocation.Path",
+        // in order to remove "Microsoft.PowerShell.Core\FileSystem::" from return value.
+        // For example, when DirectoryInfo is input from pipeline to 'Set-Location' cmdlet,
+        // "PSPath" member (including "Microsoft.PowerShell.Core\FileSystem::") is passed, and set it as current location.
+        // If "Path" member (NOT "ProviderPath") is used, return value also includes "Microsoft.PowerShell.Core\FileSystem::".
+
         // GET Unresolved Path
         public static string GetUnresolvedPath(SessionState session, string path) =>
-            Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(session.Path.CurrentFileSystemLocation.Path, session.Path.GetUnresolvedProviderPathFromPSPath(path)));
+            Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(session.Path.CurrentFileSystemLocation.ProviderPath, session.Path.GetUnresolvedProviderPathFromPSPath(path)));
 
         // GET Resolved Path
         public static string[] GetResolvedPath(SessionState session, string path) => (
             from resolved_path in session.Path.GetResolvedProviderPathFromPSPath(path, out _)
-            select Path.GetFullPath(Path.IsPathRooted(resolved_path) ? resolved_path : Path.Combine(session.Path.CurrentFileSystemLocation.Path, resolved_path))
+            select Path.GetFullPath(Path.IsPathRooted(resolved_path) ? resolved_path : Path.Combine(session.Path.CurrentFileSystemLocation.ProviderPath, resolved_path))
             ).ToArray();
     }
 }

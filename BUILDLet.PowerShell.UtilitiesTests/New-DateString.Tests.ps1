@@ -100,11 +100,11 @@ Describe "New-DateString" {
             # (None)
 
             # ACT
-            if ($Format -eq $null) {
-                $actual = New-DateString -Date $Date -LCID $LCID
+            if ($Format) {
+                $actual = New-DateString -Date $Date -LCID $LCID -Format $Format
             }
             else {
-                $actual = New-DateString -Date $Date -LCID $LCID -Format $Format
+                $actual = New-DateString -Date $Date -LCID $LCID
             }
 
             # OUTPUT (only for DEBUG Build)

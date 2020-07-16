@@ -79,7 +79,7 @@ Describe "Test-UnresolvedPath" {
             Param($InputPath, $ExpectedPath)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
             $actual = Test-UnresolvedPath -Path $InputPath

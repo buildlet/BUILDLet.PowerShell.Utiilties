@@ -53,7 +53,7 @@ Describe "Set-PrivateProfile" {
     AfterAll {
 
         # Reset Location
-        $PSScriptRoot | Set-Location
+        Set-Location -Path $PSScriptRoot
     }
 
 
@@ -68,21 +68,29 @@ Describe "Set-PrivateProfile" {
                 Section = 'Section2'
                 Key = 'Key1'
                 Value = 'Value1'
-                Initial = 
+                Content = 
 @"
 [SECTION1]
 KEY1=VALUE1
 "@
-                Expected = @(
+                Sections = @(
                     @{
-                        Section = 'SECTION1'
-                        Key = 'KEY1'
-                        Value ='VALUE1'
+                        Name = 'SECTION1'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                        )
                     }
                     @{
-                        Section = 'SECTION2'
-                        Key = 'KEY1'
-                        Value ='VALUE1'
+                        Name = 'SECTION2'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                        )
                     }
                 )
             }
@@ -93,21 +101,24 @@ KEY1=VALUE1
                 Section = 'Section1'
                 Key = 'Key2'
                 Value = 'Value2'
-                Initial = 
+                Content = 
 @"
 [SECTION1]
 KEY1=VALUE1
 "@
-                Expected = @(
+                Sections = @(
                     @{
-                        Section = 'SECTION1'
-                        Key = 'KEY1'
-                        Value ='VALUE1'
-                    }
-                    @{
-                        Section = 'SECTION1'
-                        Key = 'Key2'
-                        Value ='Value2'
+                        Name = 'SECTION1'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='VALUE1'
+                            }
+                            @{
+                                Key = 'Key2'
+                                Value ='Value2'
+                            }
+                        )
                     }
                 )
             }
@@ -118,16 +129,20 @@ KEY1=VALUE1
                 Section = 'Section1'
                 Key = 'Key1'
                 Value = 'Value2'
-                Initial = 
+                Content = 
 @"
 [SECTION1]
 KEY1=VALUE1
 "@
-                Expected = @(
+                Sections = @(
                     @{
-                        Section = 'SECTION1'
-                        Key = 'KEY1'
-                        Value ='Value2'
+                        Name = 'SECTION1'
+                        Entries = @(
+                            @{
+                                Key = 'KEY1'
+                                Value ='Value2'
+                            }
+                        )
                     }
                 )
             }
@@ -136,17 +151,17 @@ KEY1=VALUE1
 		It "adds New Entry" -TestCases $TestCases {
 
             # PARAMETER(S)
-            Param($Path, $Section, $Key, $Value, $Initial, $Expected)
+            Param($Path, $Section, $Key, $Value, $Content, $Sections)
 
 
             # ARRANGE (Location)
-            Set-Location $TargetDir
+            Set-Location -Path $TargetDir
 
             # ARRANGE (Remove old INI File)
             if ($Path | Test-Path) { Remove-Item -Path $Path -Force }
 
             # ARRANGE (Create New INI File)
-            $Initial | Out-File -FilePath $Path -Encoding utf8
+            $Content | Out-File -FilePath $Path -Encoding utf8
 
 
             # ACT
@@ -154,29 +169,43 @@ KEY1=VALUE1
 
 
             # GET Entries for Assertion
-            [psobject[]]$profile = Get-PrivateProfile -Path $Path
+            $actual = Get-PrivateProfile -Path $Path
 
-            # ASSERT
-            for ($i = 0; $i -lt $Expected.Count; $i++) {
+            # ASSERT (for Sections)
+            $Sections | % {
+
+                # SET Expected Secction
+                $expected_section = $_
 
                 # OUTPUT (only for DEBUG Build)
                 if ($ActiveConfigurationName -eq 'Debug') {
-                    Write-Host ("`t`t`tExpected Entries[$i] (Section, Key, Value): (`"" + $Expected[$i].Section + "`", `"" + $Expected[$i].Key + '", "' + $Expected[$i].Value + '")')
-                    Write-Host ("`t`t`tActual Entries[$i] (Section, Key, Value):   (`"" + $profile[$i].Section + "`", `"" + $profile[$i].Key + '", "' + $profile[$i].Value + '")')
+                    Write-Host ("`t`t`tSection Name: `"" + $expected_section.Name + '"')
                 }
 
-                # ASSERT (1: Section)
-                $profile[$i].Section | Should Be $Expected[$i].Section
+                # ASSERT (1: Section Name)
+                $actual.ContainsKey($expected_section.Name) | Should Be $true
 
-                # ASSERT (2: Key)
-                $profile[$i].Key | Should Be $Expected[$i].Key
+                # for Entries
+                $expected_section.Entries | % {
 
-                # ASSERT (3: Value)
-                $profile[$i].Value | Should Be $Expected[$i].Value
+                    # SET Expected Entry
+                    $expected_entry = $_
+
+                    # OUTPUT (only for DEBUG Build)
+                    if ($ActiveConfigurationName -eq 'Debug') {
+                        Write-Host ("`t`t`tEntry: `"" + $expected_entry.Key + '", "' + $actual[$expected_section.Name][$expected_entry.Key] + '"')
+                    }
+
+                    # ASSERT (2: Entry)
+                    $actual[$expected_section.Name][$expected_entry.Key] | Should Be $expected_entry.Value
+                }
+
+                # ASSERT (3: Count of Entries)
+                $actual[$expected_section.Name].Count | Should Be $expected_section.Entries.Count
             }
 
-            # ASSERT (4: Count)
-            $profile.Count | Should Be $Expected.Count
+            # ASSERT (4: Count of Sections)
+            $actual.Count | Should Be $Sections.Count
 		}
 	}
 }

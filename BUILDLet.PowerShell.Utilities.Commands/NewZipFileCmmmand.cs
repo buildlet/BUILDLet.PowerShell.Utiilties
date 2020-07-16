@@ -39,7 +39,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // ----------------------------------------------------------------------------------------------------
 
         // .PARAMETER Path
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = PathHelpMessage)]
+        [Parameter(HelpMessage = PathHelpMessage, Mandatory = true, Position = 0, ValueFromPipeline = true)]
         [Alias("PSPath")]
         public string[] Path { get; set; }
         private const string PathHelpMessage =
@@ -47,7 +47,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER DestinationPath
-        [Parameter(Position = 1, HelpMessage = DestinationHelpMessage)]
+        [Parameter(HelpMessage = DestinationHelpMessage, Position = 1)]
         public string DestinationPath { get; set; }
         private const string DestinationHelpMessage =
 @"作成する zip ファイルのパスを指定します。
@@ -66,7 +66,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // .PARAMETER Encoding
         [Parameter(HelpMessage = EncodingHelpMessage)]
         public Encoding Encoding { get; set; }
-        protected const string EncodingHelpMessage =
+        private const string EncodingHelpMessage =
 @"エンコーディングを指定します。
 既定のエンコーディングは System.Text.Encoding.UTF8 です。";
 

@@ -24,7 +24,6 @@
 
 ################################################################################
 Function New-DateString {
-
 <#
 
 .SYNOPSIS
@@ -70,37 +69,37 @@ https://docs.microsoft.com/ja-jp/dotnet/api/system.globalization.cultureinfo.-ct
 
 .LINK
 http://www.infoterm.info/standardization/iso_639_1_2002.php
-
+    
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-		[System.DateTime]
+        [System.DateTime]
         # 表示する日付を指定します。
         # 既定では、このコマンドを実行した当日です。
         $Date = (Get-Date),
 
         [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
-		[string]
+        [string]
         # ロケール ID (LCID) を指定します。省略した場合の既定の設定は、
         # 現在のカルチャーの LCID です。
         $LCID = (Get-Culture).ToString(),
 
         [Parameter(Position = 2)]
-		[string]
+        [string]
         # 書式指定文字列を指定します。
         # 省略した場合の既定の設定は 'D' です。
         $Format = 'D'
     )
 
-    Process { return ($Date).ToString($Format, (New-Object System.Globalization.CultureInfo($LCID))) }
+    # Input Processing Operations
+    Process {
+        Write-Output ($Date).ToString($Format, (New-Object System.Globalization.CultureInfo($LCID)))
+    }
 }
 
 ################################################################################
 Function Get-AuthenticodeSignerName {
-
 <#
 
 .SYNOPSIS
@@ -123,9 +122,7 @@ https://github.com/buildlet/PowerShellUtilities
 https://docs.microsoft.com/ja-jp/powershell/module/Microsoft.PowerShell.Security/Get-AuthenticodeSignature
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -134,16 +131,18 @@ https://docs.microsoft.com/ja-jp/powershell/module/Microsoft.PowerShell.Security
         $FilePath
     )
 
+    # Input Processing Operations
     Process {
         if ($null -ne ($cert = (Get-AuthenticodeSignature -FilePath $FilePath).SignerCertificate)) {
-			$cert.Subject -split ',' | Where-Object { $_ -like 'CN=*' } | ForEach-Object { return ($_ -split 'CN=')[1] }
+            $cert.Subject -split ',' |
+            Where-Object { $_ -like 'CN=*' } |
+            ForEach-Object { Write-Output ($_ -split 'CN=')[1] }
         }
     }
 }
 
 ################################################################################
 Function Get-FileVersionInfo {
-
 <#
 
 .SYNOPSIS
@@ -169,9 +168,7 @@ https://github.com/buildlet/PowerShellUtilities
 http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -180,12 +177,14 @@ http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo
         $FilePath
     )
 
-    Process { return (Get-Item -Path $FilePath).VersionInfo }
+    # Input Processing Operations
+    Process {
+        Write-Output (Get-Item -Path $FilePath).VersionInfo
+    }
 }
 
 ################################################################################
 Function Get-FileVersion {
-
 <#
 
 .SYNOPSIS
@@ -208,9 +207,7 @@ https://github.com/buildlet/PowerShellUtilities
 http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.fileversion.aspx
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -219,12 +216,14 @@ http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.filev
         $FilePath
     )
 
-    Process { return (Get-Item -Path $FilePath).VersionInfo.FileVersion }
+    # Input Processing Operations
+    Process {
+        Write-Output (Get-Item -Path $FilePath).VersionInfo.FileVersion
+    }
 }
 
 ################################################################################
 Function Get-ProductVersion {
-
 <#
 
 .SYNOPSIS
@@ -247,9 +246,7 @@ https://github.com/buildlet/PowerShellUtilities
 http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.productversion.aspx
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -258,12 +255,14 @@ http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.produ
         $FilePath
     )
 
-    Process { return (Get-Item -Path $FilePath).VersionInfo.ProductVersion }
+    # Input Processing Operations
+    Process {
+        Write-Output (Get-Item -Path $FilePath).VersionInfo.ProductVersion
+    }
 }
 
 ################################################################################
 Function Get-ProductName {
-
 <#
 
 .SYNOPSIS
@@ -285,9 +284,7 @@ https://github.com/buildlet/PowerShellUtilities
 http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.productname.aspx
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -296,12 +293,14 @@ http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.produ
         $FilePath
     )
 
-    Process { return (Get-Item -Path $FilePath).VersionInfo.ProductName }
+    # Input Processing Operations
+    Process {
+        Write-Output (Get-Item -Path $FilePath).VersionInfo.ProductName
+    }
 }
 
 ################################################################################
 Function Get-FileDescription {
-
 <#
 
 .SYNOPSIS
@@ -324,9 +323,7 @@ https://github.com/buildlet/PowerShellUtilities
 http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.filedescription.aspx
 
 #>
-
     [CmdletBinding()]
-
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
@@ -335,7 +332,51 @@ http://msdn.microsoft.com/ja-jp/library/system.diagnostics.fileversioninfo.filed
         $FilePath
     )
 
-    Process { return (Get-Item -Path $FilePath).VersionInfo.FileDescription }
+    # Input Processing Operations
+    Process {
+        Write-Output (Get-Item -Path $FilePath).VersionInfo.FileDescription
+    }
+}
+
+################################################################################
+Function ConvertTo-WslPath {
+<#
+
+.SYNOPSIS
+Windows path を WSL path に変換します。
+
+.DESCRIPTION
+通常の Windows パス文字列を WSL パス文字列に変換します。
+
+.INPUTS
+System.String
+
+.OUTPUTS
+System.String
+
+.LINK
+https://github.com/buildlet/PowerShellUtilities
+
+#>
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]
+        # 変換する Windows パスを指定します。
+        $Path
+    )
+
+    # Input Processing Operations
+    Process {
+
+        # Absolute Path:
+        if ([System.IO.Path]::IsPathRooted($Path)) {
+            $Path = '/mnt/' + [char]::ToLower($Path[0]) + $Path.Substring(2)
+        }
+
+        # Replace Directory Separator ('\' -> '/') and Output it
+        $Path.Replace([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) | Write-Output
+    }
 }
 
 ################################################################################

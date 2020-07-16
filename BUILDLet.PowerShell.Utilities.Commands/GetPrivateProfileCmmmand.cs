@@ -30,8 +30,8 @@ using BUILDLet.Standard.Utilities; // for PrivateProfile
 namespace BUILDLet.PowerShell.Utilities.Commands
 {
     [CmdletBinding(HelpUri = "https://github.com/buildlet/BUILDLet.PowerShell.Utilities")]
-    [Cmdlet(VerbsCommon.Get, "PrivateProfile", SupportsShouldProcess = true)]
-    [OutputType(typeof(string), typeof(PSCustomObject[]))]
+    [Cmdlet(VerbsCommon.Get, "PrivateProfile", SupportsShouldProcess = true, DefaultParameterSetName = "Path")]
+    [OutputType(typeof(string), typeof(Dictionary<string, string>), typeof(Dictionary<string, Dictionary<string, string>>))]
     public class GetPrivateProfileCmmmand : PSCmdlet
     {
         // ----------------------------------------------------------------------------------------------------
@@ -39,15 +39,22 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // ----------------------------------------------------------------------------------------------------
 
         // .PARAMETER Path
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = true, HelpMessage = PathHelpMessage)]
+        [Parameter(HelpMessage = PathHelpMessage, Mandatory = true, ParameterSetName = "Path", Position = 0, ValueFromPipeline = true)]
         [Alias("PSPath")]
         public string Path { get; set; }
         private const string PathHelpMessage =
 @"INI ファイルのパスを指定します。";
 
 
+        // .PARAMETER InputObject
+        [Parameter(HelpMessage = InputObjectHelpMessage, Mandatory = true, ParameterSetName = "InputObject", Position = 0, ValueFromPipeline = true)]
+        public string InputObject { get; set; }
+        private const string InputObjectHelpMessage =
+@"INI ファイルのコンテンツを指定します。";
+
+
         // .PARAMETER Section
-        [Parameter(Position = 1, HelpMessage = SectionHelpMessage)]
+        [Parameter(HelpMessage = SectionHelpMessage, Position = 1)]
         public string Section { get; set; }
         private const string SectionHelpMessage =
 @"取得するエントリーのセクションを指定します。
@@ -55,7 +62,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER Key
-        [Parameter(Position = 2, HelpMessage = KeyHelpMessage)]
+        [Parameter(HelpMessage = KeyHelpMessage, Position = 2)]
         public string Key { get; set; }
         private const string KeyHelpMessage =
 @"取得するエントリーのキーを指定します。
@@ -73,81 +80,38 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // ----------------------------------------------------------------------------------------------------
         protected override void ProcessRecord()
         {
-            foreach (var filepath in SessionLocation.GetResolvedPath(this.SessionState, this.Path))
+            if (this.ParameterSetName == "Path")
             {
-                // Validation (File Existence Check):
-                if (!File.Exists(filepath)) { throw new FileNotFoundException(); }
-
-                // Open INI File Stream by READ-ONLY Mode
-                using (var profile = new PrivateProfile(filepath))
+                foreach (var filepath in SessionLocation.GetResolvedPath(this.SessionState, this.Path))
                 {
-                    if (this.Section is null)
+                    // Validation (File Existence Check):
+                    if (!File.Exists(filepath)) { throw new FileNotFoundException(); }
+
+                    // Open INI File Stream by READ-ONLY Mode
+                    using (var profile = new PrivateProfile(filepath))
                     {
-                        // FILE:
-
-                        // Should Process
-                        if (this.ShouldProcess($"ファイル '{filepath}'", "全てのエントリーの取得"))
-                        {
-                            // for Sections
-                            foreach (var section_name in profile.Sections.Keys)
-                            {
-                                // for Entries
-                                foreach (var key in profile.Sections[section_name].Entries.Keys)
-                                {
-                                    // OUTPUT Entry
-                                    this.WriteEntry(section_name, key, profile.Sections[section_name].Entries[key]);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Validation (SECTION Existence Check):
-                        if (!profile.Contains(this.Section)) { throw new KeyNotFoundException(); }
-
-                        // UPDATE SECTION
-                        this.Section = (from section_name in profile.Sections.Keys where string.Compare(section_name, this.Section, true) == 0 select section_name).First();
-
-                        if (this.Key is null)
-                        {
-                            // SECTION:
-
-                            // Should Process
-                            if (this.ShouldProcess($"ファイル '{filepath}'", $"セクション '{this.Section}' に含まれる全てのエントリーの取得"))
-                            {
-
-                                // GET Entries
-                                var entries = profile.Sections[this.Section].Entries;
-
-                                // for Entries
-                                foreach (var key in entries.Keys)
-                                {
-                                    // OUTPUT Entry
-                                    this.WriteEntry(this.Section, key, entries[key]);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // ENTRY:
-
-                            // Validation (KEY Existence Check):
-                            if (!profile.Sections[this.Section].Entries.ContainsKey(this.Key)) { throw new KeyNotFoundException(); }
-
-                            // UPDATE KEY
-                            this.Key = (from key in profile.Sections[this.Section].Entries.Keys where string.Compare(key, this.Key, true) == 0 select key).First();
-
-                            // Should Process
-                            if (this.ShouldProcess($"ファイル '{filepath}'", $"セクション '{this.Section}' に含まれるキー '{this.Key}' の値の取得"))
-                            {
-                                // OUTPUT
-                                this.WriteObject(profile.GetValue(this.Section, this.Key));
-                            }
-                        }
+                        // OUTPUT Profile (according parameter)
+                        WriteProfile(profile, $"ファイル '{filepath}'");
                     }
                 }
             }
+            else if (this.ParameterSetName == "InputObject")
+            {
+                // NEW PrivateProfile
+                var profile = new PrivateProfile();
+
+                // IMPORT content from InputObject
+                profile.Import(this.InputObject);
+
+                // OUTPUT Profile (according parameter)
+                WriteProfile(profile, $"パラメーター '{nameof(InputObject)}'");
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
+
 
         // ----------------------------------------------------------------------------------------------------
         // Post-Processing Operations
@@ -159,19 +123,100 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         // Private Method(s)
         // ----------------------------------------------------------------------------------------------------
 
-        // OUTPUT Entry
-        private void WriteEntry(string section, string key, string value)
+        // Write Profile according parameter
+        private void WriteProfile(PrivateProfile profile, string target)
         {
-            // NEW PSObject
-            PSObject psobj = new PSObject();
+            if (this.Section is null)
+            {
+                // ALL (FILE):
 
-            // Add Member(s)
-            psobj.Members.Add(new PSNoteProperty("Section", section));
-            psobj.Members.Add(new PSNoteProperty("Key", key));
-            psobj.Members.Add(new PSNoteProperty("Value", value));
+                // Should Process
+                if (this.ShouldProcess(target, "全てのエントリーの取得"))
+                {
+                    // GET Sections
+                    var sections = GetPrivateProfileSections(profile);
 
-            // Write PSObject
-            this.WriteObject(psobj);
+                    // OUTPUT Sections
+                    this.WriteObject(sections);
+                }
+            }
+            else
+            {
+                // Validation (SECTION Existence Check):
+                if (!profile.Contains(this.Section)) { throw new KeyNotFoundException(); }
+
+                // UPDATE SECTION
+                this.Section = (from section_name in profile.Sections.Keys where string.Compare(section_name, this.Section, true) == 0 select section_name).First();
+
+                if (this.Key is null)
+                {
+                    // SECTION:
+
+                    // Should Process
+                    if (this.ShouldProcess(target, $"セクション '{this.Section}' に含まれる全てのエントリーの取得"))
+                    {
+                        // GET Entries
+                        var entries = GetPrivateProfileEntries(profile.Sections[this.Section]);
+
+                        // OUTPUT Entries
+                        this.WriteObject(entries);
+                    }
+                }
+                else
+                {
+                    // ENTRY:
+
+                    // Validation (KEY Existence Check):
+                    if (!profile.Sections[this.Section].Entries.ContainsKey(this.Key)) { throw new KeyNotFoundException(); }
+
+                    // UPDATE KEY
+                    this.Key = (from key in profile.Sections[this.Section].Entries.Keys where string.Compare(key, this.Key, true) == 0 select key).First();
+
+                    // Should Process
+                    if (this.ShouldProcess(target, $"セクション '{this.Section}' に含まれるキー '{this.Key}' の値の取得"))
+                    {
+                        // OUTPUT Entry
+                        this.WriteObject(profile.GetValue(this.Section, this.Key));
+                    }
+                }
+            }
+        }
+
+        // GET Sections
+        private Dictionary<string, Dictionary<string, string>> GetPrivateProfileSections(PrivateProfile profile)
+        {
+            // NEW Dictionary (Sections)
+            Dictionary<string, Dictionary<string, string>> sections = new Dictionary<string, Dictionary<string, string>>(PrivateProfileSection.StringComparer);
+
+            // for Sections
+            foreach (var section_name in profile.Sections.Keys)
+            {
+                // GET Entries
+                var entries = this.GetPrivateProfileEntries(profile.Sections[section_name]);
+
+                // ADD Section
+                sections.Add(section_name, entries);
+            }
+
+            // RETURN Sections
+            return sections;
+        }
+
+        // GET Entries
+        private Dictionary<string, string> GetPrivateProfileEntries(PrivateProfileSection section)
+        {
+            // NEW Dictionary (Entries)
+            Dictionary<string, string> entries = new Dictionary<string, string>(PrivateProfileSection.StringComparer);
+
+            // for Entries
+            foreach (var key in section.Entries.Keys)
+            {
+                // ADD Entry
+                entries.Add(key, section.Entries[key]);
+            }
+
+            // RETURN Entries
+            return entries;
         }
     }
 }
