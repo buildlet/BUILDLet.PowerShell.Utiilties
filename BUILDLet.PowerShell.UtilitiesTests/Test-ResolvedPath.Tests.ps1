@@ -41,7 +41,7 @@ $ActiveConfigurationName = Get-DTEActiveConfigurationName -Path ($PSScriptRoot |
 $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" | Import-Module
 
 
-# Test-UnresolvedPath
+# Test-ResolvedPath
 Describe "Test-ResolvedPath" {
 
     # Valid Path
@@ -81,7 +81,7 @@ Describe "Test-ResolvedPath" {
             Param($InputPath, [string[]]$ExpectedPath)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
             [string[]]$actual = Test-ResolvedPath -Path $InputPath
@@ -127,7 +127,7 @@ Describe "Test-ResolvedPath" {
             Param($InputPath)
 
             # ARRANGE
-            Set-Location $PSScriptRoot
+            Set-Location -Path $PSScriptRoot
 
             # ACT
             $actual = Test-ResolvedPath -Path $InputPath

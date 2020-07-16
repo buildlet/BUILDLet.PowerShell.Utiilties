@@ -132,7 +132,7 @@ Describe "Expand-ZipFile" {
         }
 
         # Reset Location
-        $PSScriptRoot | Set-Location
+        Set-Location -Path $PSScriptRoot
     }
 
 
@@ -224,7 +224,7 @@ Describe "Expand-ZipFile" {
 
 
             # ARRANGE (Location)
-            Set-Location $TargetDir
+            Set-Location -Path $TargetDir
 
             # ARRANGE (Remove old $Entries)
             $Entries | % {

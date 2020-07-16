@@ -53,7 +53,7 @@ Describe "Get-FileVersionInfo" {
     AfterAll {
 
         # Reset Location
-        $PSScriptRoot | Set-Location
+        Set-Location -Path $PSScriptRoot
     }
 
 	Context 'normally' {
@@ -73,7 +73,7 @@ Describe "Get-FileVersionInfo" {
             Param($FilePath, $FileVersion, $ProductVersion)
 
             # ARRANGE
-            Set-Location $TargetDir
+            Set-Location -Path $TargetDir
 
             # ACT
             $actual = Get-FileVersionInfo -FilePath $FilePath

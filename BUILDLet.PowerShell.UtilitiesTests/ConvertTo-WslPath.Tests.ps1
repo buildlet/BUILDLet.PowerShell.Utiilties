@@ -41,49 +41,45 @@ $ActiveConfigurationName = Get-DTEActiveConfigurationName -Path ($PSScriptRoot |
 $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" | Import-Module
 
 
-# Get-AuthenticodeSignerName
-Describe "Get-AuthenticodeSignerName" {
+# ConvertTo-WslPath
+Describe "ConvertTo-WslPath" {
 
-    BeforeAll {
-
-        # SET $TargetDir
-        $TargetDir = $PSScriptRoot | Join-Path -ChildPath 'bin' | Join-Path -ChildPath $ActiveConfigurationName
-    }
-
-    AfterAll {
-
-        # Reset Location
-        Set-Location -Path $PSScriptRoot
-    }
-
-	Context 'normally' {
+	Context 'Windows path is input' {
 
         $TestCases = @(
 
+            # 1) Absolute Path
             @{
-                FilePath = $TargetDir | Join-Path -ChildPath BUILDLet.PowerShell.Utilities | Join-Path -ChildPath System.Text.Encoding.CodePages.dll
-                CN = 'Microsoft Corporation'
+                Path = 'C:\Windows\System32'
+                WslPath = '/mnt/c/Windows/System32'
+            }
+
+            # 2) Relative Path
+            @{
+                Path = '.\bin'
+                WslPath = './bin'
             }
         )
 
-		It "returns FileVersionInfo object" -TestCases $TestCases {
+		It "returns WSL path" -TestCases $TestCases {
 
             # PARAMETER(S)
-            Param($FilePath, $CN)
+            Param($Path, $WslPath)
 
             # ARRANGE
-            Set-Location -Path $TargetDir
+            # (None)
 
             # ACT
-            $actual = Get-AuthenticodeSignerName -FilePath $FilePath
+            $actual = ConvertTo-WslPath -Path $Path
 
             # OUTPUT (only for DEBUG Build)
             if ($ActiveConfigurationName -eq 'Debug') {
-                Write-Host ("`t`t`tCN: `"" + $CN + '"')
+                Write-Host ("`t`t`tWindows Path: `"" + $Path + '"')
+                Write-Host ("`t`t`tWSL Path:     `"" + $actual + '"')
             }
 
             # ASSERT
-            $actual | Should Be $CN
+            $actual | Should Be $WslPath
 		}
     }
 }

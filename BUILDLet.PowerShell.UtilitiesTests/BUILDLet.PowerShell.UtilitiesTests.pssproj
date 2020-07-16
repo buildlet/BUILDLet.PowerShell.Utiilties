@@ -30,9 +30,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Get-AuthenticodeSignerName.Tests.ps1" />
+    <Compile Include="ConvertTo-WslPath.Tests.ps1" />
     <Compile Include="New-DateString.Tests.ps1" />
     <Compile Include="New-ZipFile.Tests.ps1" />
     <Compile Include="Expand-ZipFile.Tests.ps1" />
+    <Compile Include="Invoke-Process.Tests.ps1" />
     <Compile Include="Set-PrivateProfile.Tests.ps1" />
     <Compile Include="Get-FileVersionInfo.Tests.ps1" />
     <Compile Include="Test-ResolvedPath.Tests.ps1" />

@@ -44,7 +44,7 @@ $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" 
 # Bytes File Name Base
 $BinFilenameBase = '0xFFx1024x1024'
 
-# Expand-ZipFile
+# New-ZipFile
 Describe "New-ZipFile" {
 
     BeforeAll {
@@ -82,8 +82,8 @@ Describe "New-ZipFile" {
             cmd /C COPY /B ($bytes_fragment_filepath_base + '_*.bin') ($bytes_filepath_base + '_0.bin')
         }
 
-        # COPY Large Size Binary Files (x5) (if NOT exist)
-        for ($i = 1; $i -lt 5; $i++) {
+        # COPY Large Size Binary Files (x4) (if NOT exist)
+        for ($i = 1; $i -lt 4; $i++) {
 
             # COPY Large Size Binary File (if NOT exist)
             if (-not ($bytes_filepath_base + '_' + $i.ToString() + '.bin' | Test-Path)) {
@@ -104,7 +104,7 @@ Describe "New-ZipFile" {
         }
 
         # Reset Location
-        $PSScriptRoot | Set-Location
+        Set-Location -Path $PSScriptRoot
     }
 
 
@@ -151,7 +151,7 @@ Describe "New-ZipFile" {
                 )
             }
 
-            # 0xFFx1024x1024x512_{0,..,4}.bin (x5) -> .\0xFFx1024x1024x512_0.zip (w/o Parameter)
+            # 0xFFx1024x1024x512_{0,..,3}.bin (x4) -> .\0xFFx1024x1024x512_0.zip (w/o Parameter)
             @{
                 Path = $BinFilenameBase + 'x512_[0-9].bin'
                 DestinationPath = $null
@@ -161,14 +161,12 @@ Describe "New-ZipFile" {
                     [string]($TargetDir | Join-Path -ChildPath Expand | Join-Path -ChildPath ($BinFilenameBase + 'x512_1.bin'))
                     [string]($TargetDir | Join-Path -ChildPath Expand | Join-Path -ChildPath ($BinFilenameBase + 'x512_2.bin'))
                     [string]($TargetDir | Join-Path -ChildPath Expand | Join-Path -ChildPath ($BinFilenameBase + 'x512_3.bin'))
-                    [string]($TargetDir | Join-Path -ChildPath Expand | Join-Path -ChildPath ($BinFilenameBase + 'x512_4.bin'))
                 )
                 Original = @(
                     [string]($TargetDir | Join-Path -ChildPath ($BinFilenameBase + 'x512_0.bin'))
                     [string]($TargetDir | Join-Path -ChildPath ($BinFilenameBase + 'x512_1.bin'))
                     [string]($TargetDir | Join-Path -ChildPath ($BinFilenameBase + 'x512_2.bin'))
                     [string]($TargetDir | Join-Path -ChildPath ($BinFilenameBase + 'x512_3.bin'))
-                    [string]($TargetDir | Join-Path -ChildPath ($BinFilenameBase + 'x512_4.bin'))
                 )
             }
         )
@@ -180,7 +178,7 @@ Describe "New-ZipFile" {
 
 
             # ARRANGE (Location)
-            Set-Location $TargetDir
+            Set-Location -Path $TargetDir
 
             # ARRANGE (Remove old $Entries)
             $Entries | % {
@@ -203,7 +201,7 @@ Describe "New-ZipFile" {
 
 
             # ACT
-            if ($DestinationPath -ne $null) {
+            if ($DestinationPath) {
                 # with $DestinationPath parameter
                 New-ZipFile -Path $Path -DestinationPath $DestinationPath
             }
@@ -214,7 +212,7 @@ Describe "New-ZipFile" {
 
 
             # ASSERT (Expand-Archive)
-            if ($DestinationPath -ne $null) {
+            if ($DestinationPath) {
                 # with $DestinationPath parameter
                 Expand-Archive -Path $ZipFilePath -DestinationPath ($DestinationPath | Split-Path -Parent | Join-Path -ChildPath Expand)
             }
