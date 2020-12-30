@@ -23,7 +23,7 @@
 ################################################################################>
 
 ################################################################################
-Function New-DateString {
+Function Get-DateString {
 <#
 
 .SYNOPSIS
@@ -69,7 +69,7 @@ https://docs.microsoft.com/ja-jp/dotnet/api/system.globalization.cultureinfo.-ct
 
 .LINK
 http://www.infoterm.info/standardization/iso_639_1_2002.php
-    
+
 #>
     [CmdletBinding()]
     Param (

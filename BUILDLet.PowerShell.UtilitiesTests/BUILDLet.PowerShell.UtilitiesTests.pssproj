@@ -31,7 +31,8 @@
   <ItemGroup>
     <Compile Include="Get-AuthenticodeSignerName.Tests.ps1" />
     <Compile Include="ConvertTo-WslPath.Tests.ps1" />
-    <Compile Include="New-DateString.Tests.ps1" />
+    <Compile Include="Get-HtmlContent.Tests.ps1" />
+    <Compile Include="Get-DateString.Tests.ps1" />
     <Compile Include="New-ZipFile.Tests.ps1" />
     <Compile Include="Expand-ZipFile.Tests.ps1" />
     <Compile Include="Invoke-Process.Tests.ps1" />
@@ -44,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BUILDLet.WindowsPowerShell.EnvDTE.dll" />
-    <Content Include="Get-PrivateProfile_Test1.ini" />
-    <Content Include="Get-PrivateProfile_Test2.ini" />
+    <Content Include="Get-PrivateProfileTest1.ini" />
+    <Content Include="Get-PrivateProfileTest2.ini" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />

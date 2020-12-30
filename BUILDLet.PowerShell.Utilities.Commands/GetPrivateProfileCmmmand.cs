@@ -47,7 +47,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 
 
         // .PARAMETER InputObject
-        [Parameter(HelpMessage = InputObjectHelpMessage, Mandatory = true, ParameterSetName = "InputObject", Position = 0, ValueFromPipeline = true)]
+        [Parameter(HelpMessage = InputObjectHelpMessage, Mandatory = true, ParameterSetName = "InputObject", Position = 0, ValueFromPipelineByPropertyName = true)]
         public string InputObject { get; set; }
         private const string InputObjectHelpMessage =
 @"INI ファイルのコンテンツを指定します。";
@@ -57,7 +57,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         [Parameter(HelpMessage = SectionHelpMessage, Position = 1)]
         public string Section { get; set; }
         private const string SectionHelpMessage =
-@"取得するエントリーのセクションを指定します。
+@"取得するエントリのセクションを指定します。
 省略した場合は、ファイル全体に含まれる全てのエントリーを取得します。";
 
 
@@ -65,8 +65,8 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         [Parameter(HelpMessage = KeyHelpMessage, Position = 2)]
         public string Key { get; set; }
         private const string KeyHelpMessage =
-@"取得するエントリーのキーを指定します。
-省略した場合は、指定したセクションに含まれる全てのエントリーを取得します。";
+@"取得するエントリのキーを指定します。
+省略した場合は、指定したセクションに含まれる全てのエントリを取得します。";
 
 
         // ----------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         private Dictionary<string, Dictionary<string, string>> GetPrivateProfileSections(PrivateProfile profile)
         {
             // NEW Dictionary (Sections)
-            Dictionary<string, Dictionary<string, string>> sections = new Dictionary<string, Dictionary<string, string>>(PrivateProfileSection.StringComparer);
+            Dictionary<string, Dictionary<string, string>> sections = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
 
             // for Sections
             foreach (var section_name in profile.Sections.Keys)
@@ -206,7 +206,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         private Dictionary<string, string> GetPrivateProfileEntries(PrivateProfileSection section)
         {
             // NEW Dictionary (Entries)
-            Dictionary<string, string> entries = new Dictionary<string, string>(PrivateProfileSection.StringComparer);
+            Dictionary<string, string> entries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // for Entries
             foreach (var key in section.Entries.Keys)

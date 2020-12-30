@@ -62,9 +62,9 @@ Describe "Set-PrivateProfile" {
 
         $TestCases = @(
 
-            # New Section, Key and Value (WriteTest001.ini)
+            # New Section, Key and Value (Set-PrivateProfileTest1.ini)
             @{
-                Path = $TargetDir | Join-Path -ChildPath WriteTest001.ini
+                Path = $TargetDir | Join-Path -ChildPath Set-PrivateProfileTest1.ini
                 Section = 'Section2'
                 Key = 'Key1'
                 Value = 'Value1'
@@ -95,9 +95,9 @@ KEY1=VALUE1
                 )
             }
 
-            # Existing Section, New Key and Value (WriteTest002.ini)
+            # Existing Section, New Key and Value (Set-PrivateProfileTest2.ini)
             @{
-                Path = $TargetDir | Join-Path -ChildPath WriteTest002.ini
+                Path = $TargetDir | Join-Path -ChildPath Set-PrivateProfileTest2.ini
                 Section = 'Section1'
                 Key = 'Key2'
                 Value = 'Value2'
@@ -123,9 +123,9 @@ KEY1=VALUE1
                 )
             }
 
-            # Existing Section and Key, New Value (WriteTest003.ini)
+            # Existing Section and Key, New Value (Set-PrivateProfileTest3.ini)
             @{
-                Path = $TargetDir | Join-Path -ChildPath WriteTest003.ini
+                Path = $TargetDir | Join-Path -ChildPath Set-PrivateProfileTest3.ini
                 Section = 'Section1'
                 Key = 'Key1'
                 Value = 'Value2'

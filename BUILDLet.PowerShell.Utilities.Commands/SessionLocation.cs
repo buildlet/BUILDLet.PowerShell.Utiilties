@@ -32,7 +32,7 @@ namespace BUILDLet.PowerShell.Utilities
         // Static Method(s)
         // ----------------------------------------------------------------------------------------------------
 
-        // NOTE:
+        // [NOTE]
         // "session.Path.CurrentFileSystemLocation.ProviderPath" should be used instead of "session.Path.CurrentFileSystemLocation.Path",
         // in order to remove "Microsoft.PowerShell.Core\FileSystem::" from return value.
         // For example, when DirectoryInfo is input from pipeline to 'Set-Location' cmdlet,

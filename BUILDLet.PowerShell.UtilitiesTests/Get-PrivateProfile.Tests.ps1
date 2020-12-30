@@ -49,9 +49,9 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfile_Test1.ini
+            # Get-PrivateProfileTest1.ini
             @{
-                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfile_Test1.ini
+                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest1.ini
                 Section = 'Section'
                 Key = 'Key'
                 Value = 'VALUE'
@@ -86,9 +86,9 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfile_Test1.ini
+            # Get-PrivateProfileTest1.ini
             @{
-                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfile_Test1.ini
+                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest1.ini
                 Section = 'Section'
                 Entries = @(
                     @{
@@ -98,9 +98,9 @@ Describe "Get-PrivateProfile" {
                 )
             }
 
-            # Get-PrivateProfile_Test2.ini
+            # Get-PrivateProfileTest2.ini
             @{
-                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfile_Test2.ini
+                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest2.ini
                 Section = 'Section2'
                 Entries = @(
                     @{
@@ -152,9 +152,9 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfile_Test2.ini
+            # Get-PrivateProfileTest2.ini
             @{
-                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfile_Test2.ini
+                Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest2.ini
                 Sections = @(
                     @{
                         Name = 'SECTION1'

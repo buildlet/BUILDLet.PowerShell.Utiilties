@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.4.3</Version>
+    <Version>1.5</Version>
     <Authors>Daiki Sakamoto</Authors>
     <Company>BUILDLet</Company>
     <Description>BUILDLet Utilities for PowerShell</Description>
@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="BUILDLet.Standard.Diagnostics" Version="1.4.0" />
-    <PackageReference Include="BUILDLet.Standard.Utilities" Version="1.4.3" />
+    <PackageReference Include="BUILDLet.Standard.Utilities" Version="1.5.0" />
     <PackageReference Include="DotNetZip" Version="1.13.8" />
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0" />
@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="SET ModuleName=&quot;BUILDLet.PowerShell.Utilities&quot;&#xD;&#xA;SET ModuleProjectName=&quot;%25ModuleName%25&quot;&#xD;&#xA;SET ModuleProjectDir=&quot;..\%25ModuleProjectName%25\&quot;&#xD;&#xA;SET ModuleTargetPath1=&quot;%25ModuleProjectDir%25%25ModuleName%25.psd1&quot;&#xD;&#xA;SET ModuleTargetPath2=&quot;%25ModuleProjectDir%25%25ModuleName%25.psm1&quot;&#xD;&#xA;SET ModuleTargetPath3=&quot;$(TargetPath)&quot;&#xD;&#xA;SET ModuleTargetPath4=&quot;$(TargetDir)BUILDLet.Standard.Utilities.dll&quot;&#xD;&#xA;SET ModuleTargetPath5=&quot;$(TargetDir)DotNetZip.dll&quot;&#xD;&#xA;SET ModuleTargetPath6=&quot;$(TargetDir)System.Text.Encoding.CodePages.dll&quot;&#xD;&#xA;SET ModuleTargetPath7=&quot;$(TargetDir)System.Runtime.CompilerServices.Unsafe.dll&quot;&#xD;&#xA;SET ModuleTargetPath8=&quot;$(TargetDir)System.Security.Permissions.dll&quot;&#xD;&#xA;&#xD;&#xA;SET TargetModuleDir=&quot;%25ModuleProjectDir%25bin\$(ConfigurationName)\%25ModuleName%25&quot;&#xD;&#xA;SET TestTargetModuleDir=&quot;..\%25ModuleName%25Tests\bin\$(ConfigurationName)\%25ModuleName%25\&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath1%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath2%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath3%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath4%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath5%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath6%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath7%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath8%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TestTargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25TargetModuleDir%25\*&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;" />
+    <Exec Command="SET ModuleName=&quot;BUILDLet.PowerShell.Utilities&quot;&#xD;&#xA;SET ModuleProjectName=&quot;%25ModuleName%25&quot;&#xD;&#xA;SET ModuleProjectDir=&quot;..\%25ModuleProjectName%25\&quot;&#xD;&#xA;SET ModuleTargetPath1=&quot;%25ModuleProjectDir%25%25ModuleName%25.psd1&quot;&#xD;&#xA;SET ModuleTargetPath2=&quot;%25ModuleProjectDir%25%25ModuleName%25.psm1&quot;&#xD;&#xA;SET ModuleTargetPath3=&quot;$(TargetPath)&quot;&#xD;&#xA;SET ModuleTargetPath4=&quot;$(TargetDir)BUILDLet.Standard.Utilities.dll&quot;&#xD;&#xA;SET ModuleTargetPath5=&quot;$(TargetDir)BUILDLet.Standard.Diagnostics.dll&quot;&#xD;&#xA;SET ModuleTargetPath6=&quot;$(TargetDir)DotNetZip.dll&quot;&#xD;&#xA;SET ModuleTargetPath7=&quot;$(TargetDir)System.Text.Encoding.CodePages.dll&quot;&#xD;&#xA;SET ModuleTargetPath8=&quot;$(TargetDir)System.Runtime.CompilerServices.Unsafe.dll&quot;&#xD;&#xA;SET ModuleTargetPath9=&quot;$(TargetDir)System.Security.Permissions.dll&quot;&#xD;&#xA;&#xD;&#xA;SET TargetModuleDir=&quot;%25ModuleProjectDir%25bin\$(ConfigurationName)\%25ModuleName%25&quot;&#xD;&#xA;SET TestTargetModuleDir=&quot;..\%25ModuleName%25Tests\bin\$(ConfigurationName)\%25ModuleName%25\&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath1%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath2%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath3%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath4%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath5%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath6%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath7%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath8%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath9%25&quot; &quot;%25TargetModuleDir%25&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TestTargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25TargetModuleDir%25\*&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>
