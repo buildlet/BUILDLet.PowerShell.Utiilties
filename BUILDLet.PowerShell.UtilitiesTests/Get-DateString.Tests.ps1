@@ -41,8 +41,8 @@ $ActiveConfigurationName = Get-DTEActiveConfigurationName -Path ($PSScriptRoot |
 $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" | Import-Module
 
 
-# New-DateString
-Describe "New-DateString" {
+# Get-DateString
+Describe "Get-DateString" {
 
 	Context 'normally' {
 
@@ -101,10 +101,10 @@ Describe "New-DateString" {
 
             # ACT
             if ($Format) {
-                $actual = New-DateString -Date $Date -LCID $LCID -Format $Format
+                $actual = Get-DateString -Date $Date -LCID $LCID -Format $Format
             }
             else {
-                $actual = New-DateString -Date $Date -LCID $LCID
+                $actual = Get-DateString -Date $Date -LCID $LCID
             }
 
             # OUTPUT (only for DEBUG Build)

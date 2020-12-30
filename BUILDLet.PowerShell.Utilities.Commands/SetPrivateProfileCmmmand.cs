@@ -48,21 +48,21 @@ namespace BUILDLet.PowerShell.Utilities.Commands
         [Parameter(HelpMessage = SectionHelpMessage, Mandatory = true, Position = 1)]
         public string Section { get; set; }
         private const string SectionHelpMessage =
-@"設定するエントリーのセクションを指定します。";
+@"設定するエントリのセクションを指定します。";
 
 
         // .PARAMETER Key
         [Parameter(HelpMessage = KeyHelpMessage, Mandatory = true, Position = 2)]
         public string Key { get; set; }
         private const string KeyHelpMessage =
-@"設定するエントリーのキーを指定します。";
+@"設定するエントリのキーを指定します。";
 
 
         // .PARAMETER Value
         [Parameter(HelpMessage = ValueHelpMessage, Mandatory = true, Position = 3)]
         public string Value { get; set; }
         private const string ValueHelpMessage =
-@"設定するエントリーの値を指定します。";
+@"設定するエントリの値を指定します。";
 
 
         // ----------------------------------------------------------------------------------------------------
