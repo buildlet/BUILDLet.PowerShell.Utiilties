@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>BUILDLet.PowerShell.UtilitiesTests</AssemblyName>
-    <Version>1.5</Version>
+    <Version>1.5.1</Version>
     <Authors>Daiki Sakamoto</Authors>
     <Company>BUILDLet</Company>
     <Description>BUILDLet Utilities for PowerShell Test Module</Description>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="SET ModuleName=&quot;BUILDLet.PowerShell.UtilitiesTests&quot;&#xD;&#xA;SET ModuleTargetPath1=&quot;$(TargetPath)&quot;&#xD;&#xA;SET ModuleTargetPath2=&quot;$(TargetDir)BUILDLet.PowerShell.Utilities.dll&quot;&#xD;&#xA;&#xD;&#xA;SET TestTargetModuleDir=&quot;..\%25ModuleName%25\bin\$(ConfigurationName)\%25ModuleName%25\&quot;&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TestTargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath1%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath2%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;" />
+    <Exec Command="SET ModuleName=BUILDLet.PowerShell.UtilitiesTests&#xD;&#xA;SET ModuleTargetPath1=$(TargetPath)&#xD;&#xA;SET ModuleTargetPath2=$(TargetDir)BUILDLet.PowerShell.Utilities.dll&#xD;&#xA;&#xD;&#xA;SET TestTargetModuleDir=..\%25ModuleName%25\bin\$(ConfigurationName)\%25ModuleName%25\&#xD;&#xA;&#xD;&#xA;DEL /F /S /Q &quot;%25TestTargetModuleDir%25\*&quot;&#xD;&#xA;MKDIR &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath1%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;COPY /Y &quot;%25ModuleTargetPath2%25&quot; &quot;%25TestTargetModuleDir%25&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>
