@@ -8,8 +8,9 @@
     <AssemblyName>MyApplication</AssemblyName>
     <Name>BUILDLet.PowerShell.UtilitiesTests</Name>
     <PackageEntryPoint>Out-Hello.Tests.ps1</PackageEntryPoint>
-    <DotNetVersion>v4.7.2</DotNetVersion>
+    <DotNetVersion>net462</DotNetVersion>
     <PackageType>Console</PackageType>
+    <PowerShellVersion>Windows PowerShell</PowerShellVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +32,10 @@
   <ItemGroup>
     <Compile Include="Get-AuthenticodeSignerName.Tests.ps1" />
     <Compile Include="ConvertTo-WslPath.Tests.ps1" />
+    <Compile Include="Get-StringReplacedBy.Tests.ps1" />
     <Compile Include="Get-HtmlContent.Tests.ps1" />
     <Compile Include="Get-DateString.Tests.ps1" />
+    <Compile Include="Send-MagicPacket.Tests.ps1" />
     <Compile Include="New-ZipFile.Tests.ps1" />
     <Compile Include="Expand-ZipFile.Tests.ps1" />
     <Compile Include="Invoke-Process.Tests.ps1" />

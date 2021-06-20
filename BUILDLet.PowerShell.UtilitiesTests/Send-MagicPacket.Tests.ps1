@@ -1,7 +1,7 @@
 <###############################################################################
  The MIT License (MIT)
 
- Copyright (c) 2020 Daiki Sakamoto
+ Copyright (c) 2021 Daiki Sakamoto
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -41,80 +41,47 @@ $ActiveConfigurationName = Get-DTEActiveConfigurationName -Path ($PSScriptRoot |
 $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" | Import-Module
 
 
-# Get-DateString
-Describe "Get-DateString" {
+# Sned-MagicPacket
+Describe "Sned-MagicPacket" {
 
-	Context 'normally' {
+	Context 'MagicPacket' {
 
         $TestCases = @(
 
+            # 1) only MAC Address
             @{
-                Date = '2020-01-30'
-                LCID = 'en'
-                Format = $null
-                DateString = 'Thursday, January 30, 2020'
+                MacAddress = '00-11-22-AA-BB-CC'
+                Port = $null
+                Count = $null
+                Interval = $null
             }
 
+            # 2)
             @{
-                Date = '2020-01-30'
-                LCID = 'en-US'
-                Format = $null
-                DateString = 'Thursday, January 30, 2020'
-            }
-
-            @{
-                Date = '2020-01-30T09:30:00'
-                LCID = 'en-US'
-                Format = 'G'
-                DateString = '1/30/2020 9:30:00 AM'
-            }
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'ja'
-                Format = $null
-                DateString = '2020年1月30日木曜日'
-            }
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'ja-JP'
-                Format = $null
-                DateString = '2020年1月30日'
-            }
-
-            @{
-                Date = '2020-01-30T09:30:00'
-                LCID = 'ja-JP'
-                Format = 'g'
-                DateString = '2020/01/30 9:30'
+                MacAddress = '00:11:22:AA:BB:CC'
+                Port = 2304
+                Count = 3
+                Interval = 100
             }
         )
 
-		It "returns FileVersionInfo object" -TestCases $TestCases {
+		It "is sent" -TestCases $TestCases {
 
             # PARAMETER(S)
-            Param($Date, $LCID, $Format, $DateString)
+            Param($MacAddress, $Port, $Count, $Interval)
 
             # ARRANGE
-            # (None)
+            $param = @{ MacAddress = $MacAddress }
+            if ($null -ne $Port) { $param += @{ Port = $Port}}
+            if ($null -ne $Count) { $param += @{ Count = $Count}}
+            if ($null -ne $Interval) { $param += @{ Interval = $Interval}}
 
             # ACT
-            if ($Format) {
-                $actual = Get-DateString -Date $Date -LCID $LCID -Format $Format
-            }
-            else {
-                $actual = Get-DateString -Date $Date -LCID $LCID
-            }
-
-            # OUTPUT (only for DEBUG Build)
-            if ($ActiveConfigurationName -eq 'Debug') {
-                Write-Host ("`t`t`tDateString: `"" + $actual + '"')
-            }
+            Send-MagicPacket @param #-Verbose
 
             # ASSERT
-            $actual | Should Be $DateString
+            # (None)
 		}
-    }
+	}
 }
 #>

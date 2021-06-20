@@ -1,7 +1,7 @@
 <###############################################################################
  The MIT License (MIT)
 
- Copyright (c) 2020 Daiki Sakamoto
+ Copyright (c) 2021 Daiki Sakamoto
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -41,79 +41,74 @@ $ActiveConfigurationName = Get-DTEActiveConfigurationName -Path ($PSScriptRoot |
 $PSScriptRoot | Join-Path -ChildPath "bin\$ActiveConfigurationName\$ModuleName" | Import-Module
 
 
-# Get-DateString
-Describe "Get-DateString" {
+# Get-StringReplacedBy
+Describe "Get-StringReplacedBy" {
 
+    # Test Cases
+    $TestCases = @(
+
+        @{
+            expected = 'Good morning, home.'
+            InputObject = 'Hello, world.'
+            SubstitutionTable = @{
+                'Hello' = 'Good morning'
+                'world' = 'home'
+            }
+        }
+
+        @{
+            expected = @'
+Version 1.60
+2021年6月17日
+'@
+            InputObject = @'
+Version __VERSION__
+__DATE__
+'@
+            SubstitutionTable = @{
+                '__VERSION__' = '1.60'
+                '__DATE__' = '2021年6月17日'
+            }
+        }
+    )
+
+
+    # $InputObject is specified as parameter
 	Context 'normally' {
 
-        $TestCases = @(
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'en'
-                Format = $null
-                DateString = 'Thursday, January 30, 2020'
-            }
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'en-US'
-                Format = $null
-                DateString = 'Thursday, January 30, 2020'
-            }
-
-            @{
-                Date = '2020-01-30T09:30:00'
-                LCID = 'en-US'
-                Format = 'G'
-                DateString = '1/30/2020 9:30:00 AM'
-            }
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'ja'
-                Format = $null
-                DateString = '2020年1月30日木曜日'
-            }
-
-            @{
-                Date = '2020-01-30'
-                LCID = 'ja-JP'
-                Format = $null
-                DateString = '2020年1月30日'
-            }
-
-            @{
-                Date = '2020-01-30T09:30:00'
-                LCID = 'ja-JP'
-                Format = 'g'
-                DateString = '2020/01/30 9:30'
-            }
-        )
-
-		It "returns FileVersionInfo object" -TestCases $TestCases {
+		It "replaces strings" -TestCases $TestCases {
 
             # PARAMETER(S)
-            Param($Date, $LCID, $Format, $DateString)
+            Param($expected, $InputObject, $SubstitutionTable)
 
             # ARRANGE
             # (None)
 
             # ACT
-            if ($Format) {
-                $actual = Get-DateString -Date $Date -LCID $LCID -Format $Format
-            }
-            else {
-                $actual = Get-DateString -Date $Date -LCID $LCID
-            }
-
-            # OUTPUT (only for DEBUG Build)
-            if ($ActiveConfigurationName -eq 'Debug') {
-                Write-Host ("`t`t`tDateString: `"" + $actual + '"')
-            }
+            $actual = Get-StringReplacedBy -InputObject $InputObject -SubstitutionTable $SubstitutionTable
 
             # ASSERT
-            $actual | Should Be $DateString
+            $actual | Should Be $expected
+		}
+    }
+
+
+    # $InputObject is input from Pipeline
+	Context 'input from pipeline' {
+
+		It "replaces strings" -TestCases $TestCases {
+
+            # PARAMETER(S)
+            Param($expected, $InputObject, $SubstitutionTable)
+
+            # ARRANGE
+            # (None)
+
+            # ACT & ASSERT
+            $actual = Write-Output $InputObject | Get-StringReplacedBy -SubstitutionTable $SubstitutionTable
+
+            # ASSERT
+            $actual | Should Be $expected
 		}
     }
 }

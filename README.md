@@ -25,12 +25,12 @@ This project (Visual Studio Solution) is built and tested on Visual Studio with 
 Remarks
 -------
 
-1. The following packages might be kept for backward compatibility with Windows PowerShell.  
-   The following versions do work with Windows PowerShell 5.1.
+1. ~~The following packages might be kept for backward compatibility with Windows PowerShell.~~  
+   ~~The following versions do work with Windows PowerShell 5.1.~~
 
-   - System.Text.Encoding.CodePages v4.5.0 (DO NOT update to v4.7.1)
-   - System.Security.Permissions v4.5.0 (DO NOT update to v4.7.0)
-   - System.Runtime.CompilerServices.Unsafe v4.5.0 (DO NOT update to v4.7.1)
+   - ~~System.Text.Encoding.CodePages v4.5.0 (DO NOT update to v4.7.1)~~
+   - ~~System.Security.Permissions v4.5.0 (DO NOT update to v4.7.0)~~
+   - ~~System.Runtime.CompilerServices.Unsafe v4.5.0 (DO NOT update to v4.7.1)~~
 
 2. For publish thie package, PowerShellGet Version 2.0.1 was required.  
    (PowerShellGet Version 2.2.4.1 (or 2.2.4) did not correctly work.)
