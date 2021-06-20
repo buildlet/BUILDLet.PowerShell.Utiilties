@@ -81,8 +81,8 @@ http://www.infoterm.info/standardization/iso_639_1_2002.php
 
         [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
         [string]
-        # ロケール ID (LCID) を指定します。省略した場合の既定の設定は、
-        # 現在のカルチャーの LCID です。
+        # ロケール ID (LCID) を指定します。
+        # 省略した場合の既定の設定は、現在のカルチャーの LCID です。
         $LCID = (Get-Culture).ToString(),
 
         [Parameter(Position = 2)]
@@ -379,5 +379,137 @@ https://github.com/buildlet/PowerShellUtilities
     }
 }
 
+################################################################################
+Function Send-MagicPacket {
+<#
+
+.SYNOPSIS
+マジックパケットを送信します。
+
+.DESCRIPTION
+マジックパケット (AMD Magic Packet Format) を UDP で送信します。
+
+.INPUTS
+System.String
+
+.OUTPUTS
+None
+
+.LINK
+https://github.com/buildlet/PowerShellUtilities
+
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    Param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]
+        # 起動対象のコンピューターの MAC アドレスを指定します。
+        $MacAddress,
+
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [string]
+        # ポート番号を指定します。
+        # 既定のポート番号は 2304 です。
+        $Port = 2304,
+
+        [Parameter(Position = 2, ValueFromPipelineByPropertyName = $true)]
+        [string]
+        # 送信回数を指定します。
+        # 既定のポート送信回数は 1 回です。
+        $Count = 1,
+
+        [Parameter(Position = 3, ValueFromPipelineByPropertyName = $true)]
+        [string]
+        # 送信間隔をミリ秒で指定します。
+        # 既定の送信間隔は 0 ミリ秒です。
+        $Interval = 0
+    )
+
+
+    # Pre-Processing Operations
+    # Begin { }
+
+
+    # Input Processing Operations
+    Process {
+
+        if ($PSCmdlet.ShouldProcess("MAC Address = '$MacAddress', Port = $Port, Count = $Count, Interval = $Interval", "マジックパケットの送信"))
+        {
+            $sent = [BUILDLet.Standard.Utilities.Network.MagicPacket]::Send($MacAddress, $Port, $Count, $Interval)
+
+            # for Output
+            for ($i = 0; $i -lt $sent.Length; $i++) {
+
+                # Verbose Output
+                Write-Verbose -Message ("Source IP Address[$i] = " + $sent[$i])
+            }
+        }
+    }
+
+
+    # Post-Processing Operations
+    # End { }
+}
+
+################################################################################
+Function Get-StringReplacedBy {
+<#
+.SYNOPSIS
+入力文字列を置換します。
+
+.DESCRIPTION
+入力文字列に対して、置換対象文字列セットの文字列を検索・置換して出力します。
+
+.INPUTS
+System.String
+
+.OUTPUTS
+System.String
+
+.EXAMPLE
+Get-Content -Path './Readme.txt' | Get-StringReplacedBy -SubstitutionTable @{ '__DATE__' = 'December 19, 2020', '__VERSION__' = '1.00' }
+Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それぞれ 'December 19, 2020' および '1.00' に置換します。
+
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    Param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]
+        # 入力文字列を指定します。
+        $InputObject,
+
+        [Parameter(Mandatory = $true, Position = 1)]
+        [hashtable]
+        # 置換対象の文字列セットを指定します。
+        $SubstitutionTable
+    )
+
+
+    # Pre-Processing Operations
+    # Begin { }
+
+
+    # Input Processing Operations
+    Process {
+
+        # Replace string(s) in $SubstitutionTable
+        $SubstitutionTable.Keys | ForEach-Object {
+
+            # GET substitution strings (bofore & after)
+            $before = $_
+            $after = $SubstitutionTable.$_
+
+            # Replace the string
+            $InputObject = $InputObject -replace $before, $after
+        }
+
+        # OUTPT
+        $InputObject | Write-Output
+    }
+
+
+    # Post-Processing Operations
+    # End { }
+}
 ################################################################################
 Export-ModuleMember -Function *

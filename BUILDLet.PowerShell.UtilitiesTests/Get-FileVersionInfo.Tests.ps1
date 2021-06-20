@@ -62,8 +62,8 @@ Describe "Get-FileVersionInfo" {
 
             @{
                 FilePath = $TargetDir | Join-Path -ChildPath BUILDLet.PowerShell.Utilities | Join-Path -ChildPath DotNetZip.dll
-                FileVersion = '1.13.8'
-                ProductVersion = '1.13.8.770d60'
+                FileVersion = '1.15.0'
+                ProductVersion = '1.15.0.065e51'
             }
         )
 
