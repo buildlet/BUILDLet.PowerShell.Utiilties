@@ -24,7 +24,7 @@
 
 #
 # This is a PowerShell Unit Test file.
-# You need a unit test framework such as Pester to run PowerShell Unit tests. 
+# You need a unit test framework such as Pester to run PowerShell Unit tests.
 # You can download Pester from https://go.microsoft.com/fwlink/?LinkID=534084
 #
 
@@ -68,7 +68,7 @@ Describe "Set-PrivateProfile" {
                 Section = 'Section2'
                 Key = 'Key1'
                 Value = 'Value1'
-                Content = 
+                Content =
 @"
 [SECTION1]
 KEY1=VALUE1
@@ -101,7 +101,7 @@ KEY1=VALUE1
                 Section = 'Section1'
                 Key = 'Key2'
                 Value = 'Value2'
-                Content = 
+                Content =
 @"
 [SECTION1]
 KEY1=VALUE1
@@ -129,7 +129,7 @@ KEY1=VALUE1
                 Section = 'Section1'
                 Key = 'Key1'
                 Value = 'Value2'
-                Content = 
+                Content =
 @"
 [SECTION1]
 KEY1=VALUE1
@@ -172,7 +172,7 @@ KEY1=VALUE1
             $actual = Get-PrivateProfile -Path $Path
 
             # ASSERT (for Sections)
-            $Sections | % {
+            $Sections | ForEach-Object {
 
                 # SET Expected Secction
                 $expected_section = $_
@@ -186,7 +186,7 @@ KEY1=VALUE1
                 $actual.ContainsKey($expected_section.Name) | Should Be $true
 
                 # for Entries
-                $expected_section.Entries | % {
+                $expected_section.Entries | ForEach-Object {
 
                     # SET Expected Entry
                     $expected_entry = $_

@@ -24,7 +24,7 @@
 
 #
 # This is a PowerShell Unit Test file.
-# You need a unit test framework such as Pester to run PowerShell Unit tests. 
+# You need a unit test framework such as Pester to run PowerShell Unit tests.
 # You can download Pester from https://go.microsoft.com/fwlink/?LinkID=534084
 #
 
@@ -49,7 +49,7 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfileTest1.ini
+            # 1) Get-PrivateProfileTest1.ini
             @{
                 Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest1.ini
                 Section = 'Section'
@@ -86,7 +86,7 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfileTest1.ini
+            # 1) Get-PrivateProfileTest1.ini
             @{
                 Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest1.ini
                 Section = 'Section'
@@ -98,7 +98,7 @@ Describe "Get-PrivateProfile" {
                 )
             }
 
-            # Get-PrivateProfileTest2.ini
+            # 2) Get-PrivateProfileTest2.ini
             @{
                 Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest2.ini
                 Section = 'Section2'
@@ -127,7 +127,7 @@ Describe "Get-PrivateProfile" {
             $actual = Get-PrivateProfile -Path $Path -Section $Section
 
             # ASSERT (for Entries)
-            $Entries | % {
+            $Entries | ForEach-Object {
 
                 # SET Expected Entry
                 $expected_entry = $_
@@ -152,7 +152,7 @@ Describe "Get-PrivateProfile" {
 
         $TestCases = @(
 
-            # Get-PrivateProfileTest2.ini
+            # 1) Get-PrivateProfileTest2.ini
             @{
                 Path = $PSScriptRoot | Join-Path -ChildPath Get-PrivateProfileTest2.ini
                 Sections = @(
@@ -194,7 +194,7 @@ Describe "Get-PrivateProfile" {
             $actual = Get-PrivateProfile -Path $Path
 
             # ASSERT (for Sections)
-            $Sections | % {
+            $Sections | ForEach-Object {
 
                 # SET Expected Secction
                 $expected_section = $_
@@ -208,7 +208,7 @@ Describe "Get-PrivateProfile" {
                 $actual.ContainsKey($expected_section.Name) | Should Be $true
 
                 # for Entries
-                $expected_section.Entries | % {
+                $expected_section.Entries | ForEach-Object {
 
                     # SET Expected Entry
                     $expected_entry = $_
@@ -235,9 +235,9 @@ Describe "Get-PrivateProfile" {
     # GET ALL SECTION(S) from $InputObject
 	Context 'with parameter $InputObject' {
 
-        # 1)
         $TestCases = @(
 
+            # 1)
             @{
                 InputObject =
 @"
@@ -306,7 +306,7 @@ KEY2=VALUE2
             $actual = Get-PrivateProfile -InputObject $InputObject
 
             # ASSERT (for Sections)
-            $Sections | % {
+            $Sections | ForEach-Object {
 
                 # SET Expected Secction
                 $expected_section = $_
@@ -320,7 +320,7 @@ KEY2=VALUE2
                 $actual.ContainsKey($expected_section.Name) | Should Be $true
 
                 # for Entries
-                $expected_section.Entries | % {
+                $expected_section.Entries | ForEach-Object {
 
                     # SET Expected Entry
                     $expected_entry = $_
@@ -342,5 +342,163 @@ KEY2=VALUE2
             $actual.Count | Should Be $Sections.Count
 		}
 	}
+
+
+    # 'IgnoreDuplicatedEntry' parameter Test (Exsisting Case)
+	Context "Duplicated Entry w/o 'IgnoreDuplicatedEntry' parameter (fails on Powershell 7.1.3)" {
+
+        It "throws exception" {
+            
+            # Parameter
+            $content = @"
+[Section]
+Key1=Value1
+Key1=Value2
+"@
+
+            # ACT & ASSERT
+            { Get-PrivateProfile -InputObject $content } | Should throw
+        }
+    }
+
+
+    # 'IgnoreDuplicatedEntry' parameter Test
+	Context "Duplicated Entry with 'IgnoreDuplicatedEntry' parameter" {
+
+        $TestCases = @(
+
+            # 1)
+            @{
+                Content = @"
+[Section]
+Key1=Value1
+Key1=Value2
+"@
+                Sections = @(
+                    @{
+                        Name = 'Section'
+                        Entries = @{
+                            'Key1' = 'Value1'
+                        }
+                    }
+                )
+            }
+
+            # 2)
+            @{
+                Content = @"
+[Section]
+Key=Value
+Key1=Value1
+Key1=Value2
+"@
+                Sections = @(
+                    @{
+                        Name = 'Section'
+                        Entries = @{
+                            'Key' = 'Value'
+                            'Key1' = 'Value2'
+                        }
+                    }
+                )
+            }
+
+            # 3)
+            @{
+                Content = @"
+[Section1]
+Key=Value
+Key=Value1
+[Section2]
+Key2=Value
+Key2=Value2
+Key3=Value3
+"@
+                Sections = @(
+                    @{
+                        Name = 'Section1'
+                        Entries = @{
+                            'Key' = 'Value'
+                        }
+                    }
+                    @{
+                        Name = 'Section2'
+                        Entries = @{
+                            'Key2' = 'Value'
+                            'Key3' = 'Value3'
+                        }
+                    }
+                )
+            }
+        )
+
+        It "does not throw exception (Read from Stream)" -TestCases $TestCases {
+            
+            # PARAMETER(s)
+            Param($Content, $Sections)
+
+            # ARRANGE
+            # (None)
+
+            # ACT (Read from Stream)
+            $actual = Get-PrivateProfile -InputObject $Content -IgnoreDuplicatedEntry
+
+            # ASSERT (Length)
+            $actual.Keys.Count | Should Be $Sections.Count
+
+            # ASSERT
+            $Sections | ForEach-Object {
+                
+                # Get Section
+                $section = $_
+
+                # ASSERT (Section Name)
+                $actual.ContainsKey($section.Name) | Should Be $true
+
+                # for Entries
+                $section.Entries.Keys | ForEach-Object {
+
+                    # ASSERT (Entry)
+                    $actual[$section.Name].ContainsKey($_) | Should Be $true
+                }
+            }
+        }
+
+        It "does not throw exception (Read from File)" -TestCases $TestCases {
+            
+            # PARAMETER(s)
+            Param($Content, $Sections)
+
+            # ARRANGE
+            $filepath = $PSScriptRoot `
+                | Join-Path -ChildPath 'bin' `
+                | Join-Path -ChildPath $ActiveConfigurationName `
+                | Join-Path -ChildPath 'Get-PrivateProfile-IgnoreDuplicatedEntryTest.ini'
+            Out-File -FilePath $filepath -InputObject $Content -Force
+
+            # ACT (Read from File)
+            $actual = Get-PrivateProfile -Path $filepath -IgnoreDuplicatedEntry
+
+            # ASSERT (Length)
+            $actual.Keys.Count | Should Be $Sections.Count
+
+            # ASSERT
+            $Sections | ForEach-Object {
+                
+                # Get Section
+                $section = $_
+
+                # ASSERT (Section Name)
+                $actual.ContainsKey($section.Name) | Should Be $true
+
+                # for Entries
+                $section.Entries.Keys | ForEach-Object {
+
+                    # ASSERT (Entry)
+                    $actual[$section.Name].ContainsKey($_) | Should Be $true
+                }
+            }
+        }
+    }
 }
 #>

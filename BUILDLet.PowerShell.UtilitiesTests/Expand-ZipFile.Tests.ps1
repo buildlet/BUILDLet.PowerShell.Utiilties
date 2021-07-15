@@ -24,7 +24,7 @@
 
 #
 # This is a PowerShell Unit Test file.
-# You need a unit test framework such as Pester to run PowerShell Unit tests. 
+# You need a unit test framework such as Pester to run PowerShell Unit tests.
 # You can download Pester from https://go.microsoft.com/fwlink/?LinkID=534084
 #
 
@@ -64,7 +64,7 @@ Describe "Expand-ZipFile" {
         [System.IO.File]::WriteAllBytes($bytes_fragment_filepath_base + '_099.bin', @(0xFF) * 1024 * 1024)
 
         # Create Zip File(s) including Large Size Binary File(s)
-        $BinFileSizeInMB | % {
+        $BinFileSizeInMB | ForEach-Object {
 
             # SET Bin File Path Base
             $bytes_in_MB = $_
@@ -227,7 +227,7 @@ Describe "Expand-ZipFile" {
             Set-Location -Path $TargetDir
 
             # ARRANGE (Remove old $Entries)
-            $Entries | % {
+            $Entries | ForEach-Object {
                 if ($_ | Test-Path) { Remove-Item -Path $_ -Force }
             }
 
@@ -241,7 +241,7 @@ Describe "Expand-ZipFile" {
                 if ($dest_dirpath | Test-Path) {
 
                     # REMOVE contents of $DestinationPath
-                    $dest_dirpath | Get-ChildItem | % {
+                    $dest_dirpath | Get-ChildItem | ForEach-Object {
                         Remove-Item -Path $_.FullName -Recurse -Force
                     }
                 }
@@ -270,7 +270,7 @@ Describe "Expand-ZipFile" {
                 $Entries[$i] | Should Exist
 
                 if ($Entries[$i] | Test-Path -PathType Leaf) {
-                    
+
                     # GET File Hash
                     $expected = Get-FileHash -Path $Original[$i]
                     $actual = Get-FileHash -Path $Entries[$i]

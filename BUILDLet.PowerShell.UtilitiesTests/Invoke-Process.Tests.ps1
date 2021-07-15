@@ -24,7 +24,7 @@
 
 #
 # This is a PowerShell Unit Test file.
-# You need a unit test framework such as Pester to run PowerShell Unit tests. 
+# You need a unit test framework such as Pester to run PowerShell Unit tests.
 # You can download Pester from https://go.microsoft.com/fwlink/?LinkID=534084
 #
 
@@ -152,10 +152,10 @@ Describe "Invoke-Process" {
 
             # OUTPUT (only for DEBUG Build)
             if ($ActiveConfigurationName -eq 'Debug') {
-                $warning | % {
+                $warning | ForEach-Object {
                     Write-Host "`t`t`tWARNING: $_"
                 }
-                $stdout | % {
+                $stdout | ForEach-Object {
                     Write-Host "`t`t`tOUTPUT: $_"
                 }
             }
@@ -213,10 +213,10 @@ Describe "Invoke-Process" {
 
                 Write-Host "`t`t`tWARNING: $_"
 
-                $warning | % {
+                $warning | ForEach-Object {
                     Write-Host "`t`t`tWARNING: $_"
                 }
-                $stdout | % {
+                $stdout | ForEach-Object {
                     Write-Host "`t`t`tOUTPUT: $_"
                 }
             }

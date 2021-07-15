@@ -68,6 +68,13 @@ namespace BUILDLet.PowerShell.Utilities.Commands
 @"取得するエントリのキーを指定します。
 省略した場合は、指定したセクションに含まれる全てのエントリを取得します。";
 
+        // .PARAMETER IgnoreDuplicatedEntry
+        [Parameter(HelpMessage = IgnoreDuplicatedEntryMessage)]
+        public SwitchParameter IgnoreDuplicatedEntry { get; set; }
+        private const string IgnoreDuplicatedEntryMessage =
+@"エントリのキーが重複している INI ファイルを読み込むことを許可する場合に true を指定します。
+省略した場合の既定の設定は false です。";
+
 
         // ----------------------------------------------------------------------------------------------------
         // Pre-Processing Operations
@@ -88,7 +95,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
                     if (!File.Exists(filepath)) { throw new FileNotFoundException(); }
 
                     // Open INI File Stream by READ-ONLY Mode
-                    using (var profile = new PrivateProfile(filepath))
+                    using (var profile = new PrivateProfile(filepath, true, this.IgnoreDuplicatedEntry))
                     {
                         // OUTPUT Profile (according parameter)
                         WriteProfile(profile, $"ファイル '{filepath}'");
@@ -98,7 +105,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
             else if (this.ParameterSetName == "InputObject")
             {
                 // NEW PrivateProfile
-                var profile = new PrivateProfile();
+                var profile = new PrivateProfile(this.IgnoreDuplicatedEntry);
 
                 // IMPORT content from InputObject
                 profile.Import(this.InputObject);
@@ -134,7 +141,7 @@ namespace BUILDLet.PowerShell.Utilities.Commands
                 if (this.ShouldProcess(target, "全てのエントリーの取得"))
                 {
                     // GET Sections
-                    var sections = GetPrivateProfileSections(profile);
+                    var sections = this.GetPrivateProfileSections(profile);
 
                     // OUTPUT Sections
                     this.WriteObject(sections);

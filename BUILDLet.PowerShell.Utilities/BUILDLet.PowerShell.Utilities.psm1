@@ -471,7 +471,7 @@ Get-Content -Path './Readme.txt' | Get-StringReplacedBy -SubstitutionTable @{ '_
 Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それぞれ 'December 19, 2020' および '1.00' に置換します。
 
 #>
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding()]
     Param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]
@@ -511,5 +511,110 @@ Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それ
     # Post-Processing Operations
     # End { }
 }
+
+################################################################################
+Function New-TestCertificate {
+<#
+.SYNOPSIS
+テストのための新しいコード署名用自己署名証明書を作成します。
+
+.DESCRIPTION
+テストのための新しいコード署名用自己署名証明書を作成し、CER, PFX (Personal Exchange Format)
+あるいは、その両方の形式でファイルとしてエクスポートします。
+
+.INPUTS
+System.String
+
+.OUTPUTS
+X509Certificate2
+
+.EXAMPLE
+New-TestCertificate
+新しいコード署名用自己署名証明書を作成し、現在のディレクトリに 'Test.cer' および 'Test.pfx' としてエクスポートします。
+証明書の Subject は 'Code Signing Test Certificate' です。
+
+.EXAMPLE
+New-TestCertificate -Path ./Test2 -Subject 'Test2 Code Signing Certificate'
+新しいコード署名用自己署名証明書を作成し、現在のディレクトリに 'Test2.cer' および 'Test2.pfx' としてエクスポートします。
+証明書の Subject は 'Test2 Code Signing Certificate' です。
+
+.NOTES
+PFX としてエクスポートするためのパスワードの入力を要求されます。
+
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    Param (
+        [Parameter(ValueFromPipeline = $true)]
+        [string]
+        # 拡張子を除いた出力ファイルのパスを指定します。
+        # 既定は 'Test' です。
+        $Path = (Get-Location | Join-Path -ChildPath 'Test'),
+
+        [Parameter()]
+        [string]
+        # 証明書の Subject を指定します。
+        # 既定は 'Code Signing Test Certificate' です。
+        $Subject = 'Code Signing Test Certificate',
+
+        [Parameter()]
+        [ValidateSet('CER', 'PFX', 'Both', 'None')]
+        [string]
+        # ファイルとしてエクスポートする場合のフォーマットを指定します。
+        # 選択肢は、CER, PFX, その両方、あるいはなしです。
+        # 既定は 'Both' です。
+        $ExportFormat = 'Both',
+
+        [Parameter()]
+        [securestring]
+        # PFX としてエクスポートするためのパスワードを指定します。
+        $Password
+    )
+
+
+    # Pre-Processing Operations
+    # Begin { }
+
+
+    # Input Processing Operations
+    Process {
+
+        # ShouldProcess
+        if ($PSCmdlet.ShouldProcess($Subject, 'コード署名のための新しい自己署名入り証明書の作成')) {
+
+            # NEW Self Signed Certificate
+            $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $Subject
+
+            # PFX
+            if (($ExportFormat -eq 'PFX') -or ($ExportFormat -eq 'Both')) {
+
+                # GET Password for PFX (Input Required)
+                if (-not $Password) {
+                    $Password = ConvertTo-SecureString -String (Read-Host -Prompt "Input Password for PFX" -MaskInput) -AsPlainText -Force
+                }
+
+                # EXPORT as PFX File
+                Export-PfxCertificate -Cert $cert -FilePath ($Path + '.pfx') -Password $Password -Force
+            }
+
+            # CER
+            if (($ExportFormat -eq 'CER') -or ($ExportFormat -eq 'Both')) {
+
+                # EXPORT as CER File
+                Export-Certificate -FilePath ($Path + '.cer') -Cert $cert -Type CERT -Force
+            }
+
+            # OUTPUT
+            Write-Output -InputObject $cert
+
+            # REMOVE Certificate
+            Remove-Item -Path $cert.PSPath
+        }
+    }
+
+
+    # Post-Processing Operations
+    # End { }
+}
+
 ################################################################################
 Export-ModuleMember -Function *
