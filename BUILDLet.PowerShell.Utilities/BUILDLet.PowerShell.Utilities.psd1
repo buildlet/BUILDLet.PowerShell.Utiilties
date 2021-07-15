@@ -12,7 +12,7 @@
 # RootModule = 'BUILDLet.PowerShell.Utilities.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.6.0'
+ModuleVersion = '1.6.2'
 
 # ID used to uniquely identify this module
 GUID = '8f433de9-112b-4c56-bf26-698924347c03'
@@ -87,6 +87,7 @@ FunctionsToExport = @(
     'ConvertTo-WslPath'
     'Send-MagicPacket'
     'Get-StringReplacedBy'
+    'New-TestCertificate'
 )
 
 # Cmdlets to export from this module
@@ -142,7 +143,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        # Prerelease = 'beta4'
+        # Prerelease = 'beta8'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false

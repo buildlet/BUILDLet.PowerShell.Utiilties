@@ -24,7 +24,7 @@
 
 #
 # This is a PowerShell Unit Test file.
-# You need a unit test framework such as Pester to run PowerShell Unit tests. 
+# You need a unit test framework such as Pester to run PowerShell Unit tests.
 # You can download Pester from https://go.microsoft.com/fwlink/?LinkID=534084
 #
 
@@ -181,7 +181,7 @@ Describe "New-ZipFile" {
             Set-Location -Path $TargetDir
 
             # ARRANGE (Remove old $Entries)
-            $Entries | % {
+            $Entries | ForEach-Object {
                 if ($_ | Test-Path) { Remove-Item -Path $_ -Force }
             }
 
@@ -228,7 +228,7 @@ Describe "New-ZipFile" {
                 $Entries[$i] | Should Exist
 
                 if ($Entries[$i] | Test-Path -PathType Leaf) {
-                    
+
                     # GET File Hash
                     $expected = Get-FileHash -Path $Original[$i]
                     $actual = Get-FileHash -Path $Entries[$i]
