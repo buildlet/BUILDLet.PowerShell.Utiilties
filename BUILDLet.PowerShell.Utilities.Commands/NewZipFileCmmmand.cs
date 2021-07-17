@@ -158,6 +158,10 @@ namespace BUILDLet.PowerShell.Utilities.Commands
                             // Workaround of DotNetZip bug
                             zip.ParallelDeflateThreshold = -1;
 
+                            // SET Flag for workaround not to save timestamp
+                            zip.EmitTimesInWindowsFormatWhenSaving = false;
+                            zip.EmitTimesInUnixFormatWhenSaving = false;
+
                             // ProgressRecord (Main):
                             ProgressRecord mainProgress = new ProgressRecord(0, $"{this.MyInvocation.MyCommand}: '{src_path}' を圧縮しています", "準備中...");
 
