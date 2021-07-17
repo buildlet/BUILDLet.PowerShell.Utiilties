@@ -468,7 +468,7 @@ System.String
 
 .EXAMPLE
 Get-Content -Path './Readme.txt' | Get-StringReplacedBy -SubstitutionTable @{ '__DATE__' = 'December 19, 2020', '__VERSION__' = '1.00' }
-Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それぞれ 'December 19, 2020' および '1.00' に置換します。
+Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それぞれ 'December 19, 2020' および '1.00' に置換した文字列を出力します。
 
 #>
     [CmdletBinding()]
@@ -505,6 +505,71 @@ Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それ
 
         # OUTPT
         $InputObject | Write-Output
+    }
+
+
+    # Post-Processing Operations
+    # End { }
+}
+
+################################################################################
+Function Set-StringReplacedBy {
+<#
+.SYNOPSIS
+ファイル内の文字列を置換します。
+
+.DESCRIPTION
+ファイル内の文字列を、指定された文字列置換テーブルに従って置換します。
+
+.INPUTS
+System.String
+
+.OUTPUTS
+None
+
+.EXAMPLE
+Set-StringReplacedBy -Path './Readme.txt' -SubstitutionTable @{ '__DATE__' = 'December 19, 2020', '__VERSION__' = '1.00' }
+Readme.txt 内にある文字列 '__DATE__' および '__VERSION__' を、それぞれ 'December 19, 2020' および '1.00' に置換します。
+
+#>
+    [CmdletBinding(SupportsShouldProcess)]
+    Param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [ValidateScript({ $_ | Resolve-Path | ForEach-Object { $_ | Test-Path -PathType Leaf }})]
+        [string[]]
+        # 入力ファイルのパスを指定します。
+        $FilePath,
+
+        [Parameter(Mandatory = $true, Position = 1)]
+        [hashtable]
+        # 置換対象の文字列セットを指定します。
+        $SubstitutionTable,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [string]
+        # 入力ファイルのエンコーディングを指定します。
+        # 既定のエンコーディングは UTF8 です。
+        $Encoding = 'UTF8'
+    )
+
+
+    # Pre-Processing Operations
+    # Begin { }
+
+
+    # Input Processing Operations
+    Process {
+
+        # for Each Path
+        $FilePath | Resolve-Path | ForEach-Object {
+
+            # Get file path
+            $target_path = $_.ProviderPath
+
+            # Replace strings & Output it to File
+            (Get-Content -Path $target_path -Encoding $Encoding -Raw | Get-StringReplacedBy -SubstitutionTable $SubstitutionTable) `
+            | Out-File -FilePath $target_path -Encoding $Encoding -NoNewline
+        }
     }
 
 
