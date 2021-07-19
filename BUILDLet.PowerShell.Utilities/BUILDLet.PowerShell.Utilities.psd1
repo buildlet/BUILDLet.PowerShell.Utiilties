@@ -12,7 +12,7 @@
 # RootModule = 'BUILDLet.PowerShell.Utilities.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.6.3'
+ModuleVersion = '1.6.4'
 
 # ID used to uniquely identify this module
 GUID = '8f433de9-112b-4c56-bf26-698924347c03'
@@ -144,7 +144,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        # Prerelease = 'beta3'
+        # Prerelease = 'beta2'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
