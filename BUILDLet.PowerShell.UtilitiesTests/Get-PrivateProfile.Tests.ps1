@@ -474,7 +474,7 @@ Key3=Value3
                 | Join-Path -ChildPath 'bin' `
                 | Join-Path -ChildPath $ActiveConfigurationName `
                 | Join-Path -ChildPath 'Get-PrivateProfile-IgnoreDuplicatedEntryTest.ini'
-            Out-File -FilePath $filepath -InputObject $Content -Force
+            Out-File -FilePath $filepath -InputObject $Content -Encoding utf8 -Force
 
             # ACT (Read from File)
             $actual = Get-PrivateProfile -Path $filepath -IgnoreDuplicatedEntry
