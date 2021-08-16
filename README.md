@@ -20,7 +20,7 @@ Install-Module -Name BUILDLet.PowerShell.Utilities
 Build and Test
 --------------
 
-This project (Visual Studio Solution) is built and tested on Visual Studio with PowerShell Tools for Visual Studio.
+This project (Visual Studio Solution) is built on Visual Studio with *PowerShell Tools for Visual Studio*, and tested by [Pester](https://pester.dev/) (<https://pester.dev> or <https://github.com/pester/>) integrated in *Visual Studio Code*.
 
 Remarks
 -------
@@ -32,8 +32,8 @@ Remarks
    - ~~System.Security.Permissions v4.5.0 (DO NOT update to v4.7.0)~~
    - ~~System.Runtime.CompilerServices.Unsafe v4.5.0 (DO NOT update to v4.7.1)~~
 
-2. For publish thie package, PowerShellGet Version 2.0.1 was required.  
-   (PowerShellGet Version 2.2.4.1 (or 2.2.4) did not correctly work.)
+2. *PowerShellGet* Version 2.0.1 was required to publish thie package.
+   (*PowerShellGet* Version 2.2.4.1 (or 2.2.4) did not correctly work.)
 
 License
 -------
